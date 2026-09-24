@@ -22,13 +22,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<script>
-  // Antes de pintar: si hay movimiento, la intro tapa la página desde el primer cuadro.
-  (function () {
-    var d = document.documentElement;
-    if (!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) d.classList.add('va-mov');
-  })();
-</script>
 <style>
 /* ── tokens ──────────────────────────────────────────────────────────────
    Diseño de un solo mundo (oscuro a propósito): carbón verde cálido, hueso
@@ -117,14 +110,29 @@ h1,h2,h3{text-wrap:balance}
   pointer-events:none;z-index:1;opacity:0;transition:opacity .8s}
 main{position:relative;z-index:2}
 
-/* ── intro ─────────────────────────────────────────────────────────────── */
-.intro{position:fixed;inset:0;z-index:100;background:var(--noche);display:none;place-items:center}
-.va-mov .intro{display:grid;animation:salida-segura 0s 7s forwards}
-@keyframes salida-segura{to{visibility:hidden;pointer-events:none}}
-.intro-marca{font-size:clamp(26px,3.6vw,42px);font-weight:500;letter-spacing:-.03em;opacity:0;filter:blur(12px)}
-.intro-marca span,.marca span{color:var(--acento)}
-.intro-linea{position:absolute;left:50%;top:calc(50% + 46px);width:120px;margin-left:-60px;height:1px;background:var(--linea);overflow:hidden}
-.intro-linea i{display:block;height:100%;background:var(--acento);transform:scaleX(0);transform-origin:0 50%}
+.marca span{color:var(--acento)}
+
+/* ── "siguiente": siempre a la mano, para quien no sabe cómo avanzar ───── */
+.siguiente{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);z-index:45;
+  height:46px;padding:0 22px;font-size:14px;--tinte:rgba(12,16,13,.5);transition:transform .45s var(--suave),opacity .35s}
+.siguiente:hover{transform:translateX(-50%) scale(1.04)}
+.siguiente.oculto{opacity:0;pointer-events:none;transform:translate(-50%,16px)}
+.siguiente svg{width:16px;height:16px;animation:rebota 1.8s ease-in-out infinite}
+@keyframes rebota{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+.visor-abierto .siguiente{display:none}
+/* Con palabra solo en la primera pantalla; después, un círculo con flecha en la
+   esquina, para no tapar lo que se está leyendo. */
+.siguiente.compacto{left:auto;right:16px;width:46px;padding:0;transform:none}
+.siguiente.compacto .sig-txt{display:none}
+.siguiente.compacto:hover{transform:scale(1.06)}
+.siguiente.compacto.oculto{transform:translateY(16px)}
+@media (min-width:861px){
+  .siguiente{left:auto;right:28px;transform:none}
+  .siguiente.compacto{right:28px}
+  .siguiente:hover{transform:scale(1.04)}
+  .siguiente.oculto{transform:translateY(16px)} }
+.gal-flecha:disabled{opacity:.35;cursor:default;transform:none}
+@media (prefers-reduced-motion:reduce){ .siguiente svg{animation:none} }
 
 /* ── navegación: una cápsula de vidrio flotante ────────────────────────── */
 .nav{position:fixed;top:calc(14px + env(safe-area-inset-top, 0px));left:50%;transform:translateX(-50%);z-index:50;
@@ -158,13 +166,7 @@ main{position:relative;z-index:2}
 .hero-sub{margin:26px auto 0;max-width:440px;font-size:clamp(15px,1.2vw,18px);line-height:1.55;color:var(--gris)}
 .hero-sub>span{display:inline-block}
 .hero-capa{position:absolute;inset:0;z-index:6;pointer-events:none}
-.hero-meta{position:absolute;top:92px;left:var(--lado);display:flex;gap:18px}
-.hero-meta b{font-weight:400;color:var(--hueso)}
 .vertical{position:absolute;left:var(--lado);bottom:48px;writing-mode:vertical-rl;transform:rotate(180deg)}
-.desliza{position:absolute;bottom:38px;left:0;right:0;margin:auto;width:max-content;display:flex;flex-direction:column;align-items:center;gap:12px}
-.desliza i{display:block;width:1px;height:46px;background:linear-gradient(var(--hueso),rgba(232,235,227,0));animation:gota 2.4s var(--suave) infinite}
-@keyframes gota{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}
-                55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 .destello{position:absolute;left:50%;top:50%;width:80vmin;height:80vmin;margin:-40vmin 0 0 -40vmin;border-radius:50%;
   background:radial-gradient(closest-side,rgba(167,216,184,.32),rgba(47,111,79,.12) 45%,rgba(47,111,79,0));
   opacity:0;z-index:4;pointer-events:none}
@@ -174,30 +176,55 @@ main{position:relative;z-index:2}
 .numero{font-weight:300;font-size:clamp(54px,10.4vw,168px);letter-spacing:-.055em;font-variant-numeric:tabular-nums;line-height:1;white-space:nowrap}
 .numero .signo{color:var(--gris);font-size:.5em;vertical-align:.62em;margin-right:.08em;letter-spacing:0}
 .numero .cent{color:var(--gris)}
-.numero-et{margin-top:24px}
-.numero-ganado{margin-top:16px;font-size:clamp(16px,1.5vw,21px);color:var(--acento);font-variant-numeric:tabular-nums;opacity:0}
+/* "cartera de ejemplo" va ENCIMA del número y sale junto con él: que nadie lo lea como dinero de alguien */
+.numero-ejemplo{display:inline-flex;align-items:center;margin-bottom:22px;padding:7px 14px;border-radius:999px;font-size:13.5px;letter-spacing:.01em;
+  color:var(--hueso);background:rgba(215,179,106,.14);box-shadow:inset 0 0 0 1px rgba(215,179,106,.4)}
+.numero-et{margin-top:22px;font-size:clamp(15px,1.3vw,18px);color:var(--gris);text-align:center;padding:0 16px}
+.numero-ganado{margin-top:14px;font-size:clamp(16px,1.5vw,21px);color:var(--acento);font-variant-numeric:tabular-nums;opacity:0}
 .numero-ganado span{color:var(--gris)}
-.numero-nota{margin-top:44px;color:var(--gris-2);opacity:0}
-@media (max-width:760px){ .vertical{display:none} .hero-meta{top:78px;left:16px;gap:12px} }
+@media (max-width:760px){ .vertical{display:none} }
 
-/* ── 2 · por dentro: el teléfono fijo y los capítulos ──────────────────── */
-.dentro{position:relative;padding:120px var(--lado)}
-.con-mov .dentro{height:100vh;height:100svh;min-height:520px;padding:0;overflow:hidden}
-.dentro-kicker{display:flex;justify-content:space-between;align-items:center;margin-bottom:40px}
-.con-mov .dentro-kicker{position:absolute;top:92px;left:var(--lado);right:var(--lado);margin:0;z-index:3}
-.contador{position:relative;padding:8px 14px;border-radius:999px}
-.contador b{font-weight:400;color:var(--hueso)}
-.dentro-grid{display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center}
-.con-mov .dentro-grid{height:100%;padding:0 var(--lado)}
-.capitulos{display:grid;gap:64px;align-items:center}
-.con-mov .capitulos{gap:0}
-.con-mov .cap{grid-area:1/1}
-.cap{max-width:520px}
-.cap .num{display:block;margin-bottom:24px}
-.cap h2{font-weight:300;font-size:clamp(34px,4.3vw,68px);line-height:1.02;letter-spacing:-.045em}
-.cap p{margin-top:22px;font-size:clamp(15px,1.15vw,18px);line-height:1.6;color:var(--gris);max-width:430px}
-.escena{position:relative;display:grid;place-items:center;perspective:1400px}
-.con-mov .escena{height:100%}
+/* ── 2 · por dentro ───────────────────────────────────────────────────────
+   Dos formas. En computadora con movimiento (.fijo): un teléfono fijo y los
+   capítulos pasan con el scroll, con pestañas para saltar a cualquiera. En el
+   celular (y sin movimiento) la página baja normal: cada capítulo con su
+   pantalla. Así nadie se queda "atorado" deslizando sin que la página baje. */
+.dentro{position:relative;padding:clamp(96px,12vw,150px) var(--lado) 40px}
+.dentro-kicker{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:22px}
+.nota-caps{display:block;margin-bottom:56px;color:var(--gris-2)}
+.capitulos{display:grid;gap:clamp(80px,11vw,130px)}
+.cap{display:flex;flex-direction:column;gap:30px}
+.cap .num{display:block;margin-bottom:16px}
+.cap h2{font-weight:300;font-size:clamp(31px,4.3vw,68px);line-height:1.02;letter-spacing:-.045em}
+.cap p{margin-top:16px;font-size:clamp(15px,1.15vw,18px);line-height:1.6;color:var(--gris);max-width:430px}
+/* el teléfono chico de cada capítulo (celular y sin movimiento): tocarlo lo abre en grande */
+.mini-tel{--alto:min(64vh,560px);display:block;align-self:center;height:var(--alto);width:calc(var(--alto) * 390 / 846);max-width:calc(100vw - 32px);
+  -webkit-appearance:none;appearance:none;border:0;border-radius:40px;padding:9px;cursor:zoom-in;
+  background:linear-gradient(145deg,rgba(232,235,227,.2),rgba(232,235,227,.05) 38%,rgba(167,216,184,.07) 70%,rgba(232,235,227,.16));
+  box-shadow:var(--borde-vidrio),0 40px 90px -30px rgba(0,0,0,.85),0 0 90px -20px rgba(47,111,79,.5)}
+@supports (height:1svh){ .mini-tel{--alto:min(64svh,560px)} }
+.mini-tel img{width:100%;height:100%;object-fit:cover;object-position:top;border-radius:32px;background:#ecf2ea}
+.mini-tel:focus-visible{outline:2px solid var(--acento);outline-offset:6px}
+@media (min-width:861px){
+  .cap{flex-direction:row;align-items:center;justify-content:space-between;gap:6vw}
+  .cap:nth-child(even){flex-direction:row-reverse}
+  .cap-txt{max-width:520px} }
+.escena,.cap-tabs,.barra-caps{display:none}
+/* pestañas de capítulo (solo en la forma fija) */
+.cap-tabs{gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.cap-tab{-webkit-appearance:none;appearance:none;border:0;background:transparent;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--gris);padding:9px 13px;border-radius:999px;cursor:pointer;transition:color .3s,background .3s,box-shadow .3s}
+.cap-tab:hover{color:var(--hueso)}
+.cap-tab[aria-current="true"]{color:var(--hueso);background:rgba(232,235,227,.06);box-shadow:var(--borde-vidrio-suave)}
+/* la forma fija (computadora con movimiento) */
+.fijo .dentro{height:100vh;height:100svh;min-height:520px;padding:0;overflow:hidden}
+.fijo .dentro-kicker{position:absolute;top:92px;left:var(--lado);right:var(--lado);margin:0;z-index:3}
+.fijo .nota-caps,.fijo .mini-tel{display:none}
+.fijo .cap-tabs{display:flex}
+.fijo .dentro-grid{display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center;height:100%;padding:0 var(--lado)}
+.fijo .capitulos{gap:0;align-items:center}
+.fijo .cap{grid-area:1/1;display:block}
+.fijo .escena{display:grid;position:relative;place-items:center;perspective:1400px;height:100%}
 /* El marco del teléfono es una losa de vidrio. Alto Y ancho explícitos: con
    aspect-ratio + max-width:100% Safari lo aplastaba a una rayita. Sin
    will-change ni giro 3D en reposo, que dejaban la pantalla borrosa. */
@@ -208,69 +235,70 @@ main{position:relative;z-index:2}
 @supports (height:1svh){ .telefono{--alto:min(72svh,690px)} }
 .pantalla{position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;background:#ecf2ea;display:flex;flex-direction:column;
   box-shadow:0 0 0 1px rgba(0,0,0,.35)}
-/* barra de estado de iPhone: hora, isla y los tres íconos dibujados en SVG */
-.barra-estado{flex:0 0 auto;height:36px;display:flex;align-items:center;justify-content:space-between;padding:2px 9% 0 11%;
-  font-size:12.5px;font-weight:600;letter-spacing:-.01em;color:#1a2e22;position:relative;font-variant-numeric:tabular-nums}
-.barra-estado .isla{position:absolute;left:50%;top:8px;width:30%;height:21px;transform:translateX(-50%);border-radius:20px;background:#0b0e0c}
-.barra-estado .ico{display:flex;gap:.36em;align-items:center}
+/* Barra de estado de iPhone con sus proporciones reales, medidas contra el alto
+   de la pantalla (--pant): hora 2%, barra 5.2%, isla 32% del ancho. Tres
+   columnas —hora | isla | íconos— para que nada se esconda detrás de la isla. */
+.telefono{--pant:calc(var(--alto) - 22px)}
+.barra-estado{flex:0 0 auto;height:calc(var(--pant) * .052);display:grid;grid-template-columns:1fr 32% 1fr;align-items:center;
+  font-size:calc(var(--pant) * .02);font-weight:600;letter-spacing:-.01em;color:#1a2e22;position:relative;font-variant-numeric:tabular-nums}
+.barra-estado .hora{justify-self:center;padding-top:.15em}
+.barra-estado .isla{grid-column:2;justify-self:stretch;height:calc(var(--pant) * .042);border-radius:999px;background:#0b0e0c}
+.barra-estado .ico{justify-self:center;display:flex;gap:.3em;align-items:center}
 .barra-estado svg{display:block;fill:#1a2e22}
-.barra-estado .senal{width:1.3em;height:.82em}
-.barra-estado .wifi{width:1.16em;height:.84em}
-.barra-estado .bateria{width:1.95em;height:.92em}
+.barra-estado .senal{width:1em;height:.66em}
+.barra-estado .wifi{width:.92em;height:.66em}
+.barra-estado .bateria{width:1.55em;height:.72em}
 .telefono:focus-visible{outline:2px solid var(--acento);outline-offset:6px}
 .pantallas{position:relative;flex:1}
 .scr{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
 .scr+.scr{display:none}
-.con-mov .scr+.scr{display:block;opacity:0}
+.fijo .scr+.scr{display:block;opacity:0}
 .escaner{display:none}
-.con-mov .escaner{display:block;position:absolute;left:0;right:0;top:-6%;height:70px;margin-top:-35px;pointer-events:none;z-index:2;
+.fijo .escaner{display:block;position:absolute;left:0;right:0;top:-6%;height:70px;margin-top:-35px;pointer-events:none;z-index:2;
   background:linear-gradient(to bottom,rgba(167,216,184,0),rgba(167,216,184,.45) 49%,rgba(47,111,79,.7) 50%,rgba(167,216,184,.45) 51%,rgba(167,216,184,0))}
 .reflejo{position:absolute;inset:11px;border-radius:40px;pointer-events:none;
   background:linear-gradient(118deg,rgba(255,255,255,.2) 0%,rgba(255,255,255,0) 30%,rgba(255,255,255,0) 72%,rgba(255,255,255,.06) 100%)}
-.nota-ejemplo{margin-top:22px;text-align:center;color:var(--gris-2)}
-.con-mov .nota-ejemplo{position:absolute;bottom:40px;left:0;right:0;margin:0}
-.barra-caps{display:none}
-.con-mov .barra-caps{display:block;position:absolute;left:var(--lado);width:min(38vw,420px);bottom:44px;height:1px;background:var(--linea);z-index:3}
+.nota-ejemplo{position:absolute;bottom:40px;left:0;right:0;margin:0;text-align:center;color:var(--gris-2)}
+.fijo .barra-caps{display:block;position:absolute;left:var(--lado);width:min(38vw,420px);bottom:44px;height:1px;background:var(--linea);z-index:3}
 .barra-caps i{display:block;height:100%;background:var(--acento);transform-origin:0 50%;transform:scaleX(0)}
-@media (max-width:860px){
-  .dentro-grid{grid-template-columns:1fr}
-  .con-mov .dentro-grid{grid-template-rows:1fr auto;padding:122px 16px 34px;gap:22px}
-  .escena{order:-1}
-  .telefono{--alto:min(50vh,480px);border-radius:38px;padding:8px}
-  @supports (height:1svh){ .telefono{--alto:min(50svh,480px)} }
-  .pantalla{border-radius:30px}
-  .reflejo{inset:8px;border-radius:30px}
-  .barra-estado{height:26px;font-size:9.5px;padding:1px 9% 0 11%}
-  .barra-estado .isla{top:6px;height:15px}
-  .con-mov .dentro-kicker{top:76px;left:16px;right:16px}
-  .con-mov .capitulos{min-height:176px;align-items:start}
-  .cap .num{margin-bottom:10px}
-  .cap h2{font-size:31px}
-  .cap p{margin-top:10px;font-size:14.5px;line-height:1.5}
-  .con-mov .nota-ejemplo{position:static;margin-top:12px;font-size:9.5px}
-  .con-mov .barra-caps{left:16px;right:16px;width:auto;bottom:18px}
-}
 
-/* ── 3 · todo lo que hace: las tarjetas que forman un arco ─────────────── */
-.galeria{position:relative;padding:120px var(--lado);text-align:center}
-.con-mov .galeria{height:100vh;height:100svh;min-height:560px;padding:0;overflow:hidden}
+/* ── 3 · todo lo que hace ─────────────────────────────────────────────────
+   En la forma fija las tarjetas forman un arco que gira con el scroll. En el
+   celular son un carrusel normal: se pasan de lado con el dedo o con flechas. */
+.galeria{position:relative;padding:clamp(96px,12vw,150px) 0;text-align:center}
+.fijo .galeria{height:100vh;height:100svh;min-height:560px;padding:0;overflow:hidden}
 .gal-intro{display:none}
-.con-mov .gal-intro{display:flex;flex-direction:column;align-items:center;gap:18px;position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);
+.fijo .gal-intro{display:flex;flex-direction:column;align-items:center;gap:18px;position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);
   z-index:1;pointer-events:none;opacity:0}
 .gal-grande{font-weight:300;font-size:clamp(26px,2.5vw,38px);line-height:1.05;letter-spacing:-.045em}
-.gal-arco-txt{max-width:640px;margin:0 auto}
-.con-mov .gal-arco-txt{position:absolute;left:16px;right:16px;top:max(104px,12%);z-index:3;pointer-events:none;opacity:0}
+.gal-arco-txt{max-width:640px;margin:0 auto;padding:0 16px}
+.fijo .gal-arco-txt{position:absolute;left:16px;right:16px;top:max(104px,12%);z-index:3;pointer-events:none;opacity:0;padding:0}
+/* las flechas van ARRIBA de las tarjetas: abajo quedaban tapadas por el botón "siguiente" */
+.gal-nav{display:flex;justify-content:center;align-items:center;gap:16px;margin-top:26px}
+.gal-flecha{width:48px;height:48px;padding:0;font-size:20px;line-height:1}
+.gal-nav .mono{min-width:74px;font-variant-numeric:tabular-nums}
+.fijo .gal-nav{display:none}
 .gal-arco-txt .titulo-grande{max-width:none;margin:0 auto}
 .gal-arco-txt p{margin:22px auto 0;max-width:470px;color:var(--gris);font-size:clamp(15px,1.15vw,17px);line-height:1.6}
 .solo-tactil{display:none}
 @media (hover:none){ .solo-fino{display:none} .solo-tactil{display:inline} }
-.gal-cartas{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:56px}
+/* el carrusel: la primera y la última pueden quedar al centro gracias al relleno */
+.gal-cartas{--mitad:85px;display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+  overscroll-behavior-x:contain;margin-top:10px;padding:12px calc(50% - var(--mitad)) 26px}
+.gal-cartas::-webkit-scrollbar{display:none}
+.gal-cartas .carta{flex:0 0 auto;scroll-snap-align:center}
 /* La tarjeta mide lo que mide en el arco (su tamaño más grande): en el círculo
    y en la fila solo se encoge. Crecer por escala la dejaba borrosa. */
-.carta{--cw:150px;--ch:213px;width:var(--cw);height:var(--ch);perspective:1000px;cursor:pointer}
-@media (max-width:767px){ .carta{--cw:120px;--ch:171px} }
-.con-mov .gal-cartas{position:absolute;inset:0;margin:0;display:block}
-.con-mov .carta{position:absolute;left:50%;top:50%;margin:calc(var(--ch) / -2) 0 0 calc(var(--cw) / -2);opacity:0}
+.carta{--cw:170px;--ch:242px;width:var(--cw);height:var(--ch);perspective:1000px;cursor:pointer}
+@media (max-width:600px){
+  .gal-cartas{--mitad:75px}
+  .gal-cartas .carta{--cw:150px;--ch:213px}
+  .galeria{padding-top:72px}
+  .mini-tel{--alto:min(56vh,520px)}
+  @supports (height:1svh){ .mini-tel{--alto:min(56svh,520px)} } }
+.fijo .carta{--cw:150px;--ch:213px}
+.fijo .gal-cartas{position:absolute;inset:0;margin:0;padding:0;display:block;overflow:visible}
+.fijo .carta{position:absolute;left:50%;top:50%;margin:calc(var(--ch) / -2) 0 0 calc(var(--cw) / -2);opacity:0}
 .carta-in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,1.35,.4,1)}
 @media (hover:hover){ .carta:hover .carta-in{transform:rotateY(180deg)} }
 .carta.volteada .carta-in{transform:rotateY(180deg)}
@@ -280,6 +308,10 @@ main{position:relative;z-index:2}
 .cara img{width:100%;height:100%;object-fit:cover;object-position:top}
 .cara.frente::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,0) 40%),rgba(12,16,13,.06);transition:background .4s}
 .carta:hover .cara.frente::after{background:rgba(12,16,13,0)}
+/* en el carrusel cada pantalla dice qué es, sin tener que voltearla */
+.cara .etiqueta{position:absolute;left:0;right:0;bottom:0;z-index:1;padding:30px 11px 10px;text-align:left;font-size:12.5px;font-weight:500;
+  line-height:1.25;color:var(--hueso);background:linear-gradient(to top,rgba(12,16,13,.94),rgba(12,16,13,.6) 55%,rgba(12,16,13,0))}
+.fijo .cara .etiqueta{display:none}
 .cara.frente{transform:rotateY(0deg);transition:visibility 0s .16s}
 .carta.volteada .cara.frente{visibility:hidden}
 @media (hover:hover){ .carta:hover .cara.frente{visibility:hidden} }
@@ -303,6 +335,12 @@ main{position:relative;z-index:2}
 .visor-fig img{width:100%;height:auto;border-radius:26px;box-shadow:0 0 0 1px rgba(232,235,227,.16),0 40px 100px -20px rgba(0,0,0,.8)}
 .visor-fig figcaption{margin-top:18px;text-align:center}
 .visor-cerrar{position:fixed;top:calc(16px + env(safe-area-inset-top, 0px));right:16px;z-index:91;--tinte:rgba(12,16,13,.55)}
+/* anterior / siguiente dentro del visor, para recorrer las pantallas sin salir */
+.visor-nav{position:fixed;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom, 0px));z-index:91;display:flex;justify-content:center;align-items:center;gap:16px;pointer-events:none}
+.visor-nav>*{pointer-events:auto}
+.visor-nav .gal-flecha{--tinte:rgba(12,16,13,.6)}
+.visor-nav .mono{min-width:74px;text-align:center;color:var(--hueso);font-variant-numeric:tabular-nums}
+.visor.con-lista{padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px))}
 
 /* ── secciones de texto ────────────────────────────────────────────────── */
 .seccion{position:relative;padding:clamp(120px,14vw,210px) var(--lado)}
@@ -346,13 +384,13 @@ main{position:relative;z-index:2}
 .campo .mono i{font-style:normal;text-transform:none;letter-spacing:.02em;color:var(--gris-2)}
 .forma input[type=text],.forma textarea{width:100%;font:inherit;font-size:17px;color:var(--hueso);background:transparent;border:0;
   border-bottom:1px solid rgba(232,235,227,.22);padding:8px 0 10px;border-radius:0;resize:none;transition:border-color .3s}
-.forma textarea{font-size:15.5px;line-height:1.5}
+.forma textarea{font-size:16px;line-height:1.5}   /* 16 px o más: si no, el iPhone hace zoom al tocar */
 .forma input::placeholder,.forma textarea::placeholder{color:var(--gris-2)}
 .forma input[type=text]:focus,.forma textarea:focus{outline:none;border-bottom-color:var(--acento)}
 .opciones{display:flex;flex-wrap:wrap;gap:8px}
 .op{position:relative;cursor:pointer}
 .op input{position:absolute;opacity:0;pointer-events:none}
-.op span{display:inline-flex;align-items:center;height:34px;padding:0 14px;border-radius:999px;font-size:13.5px;color:var(--gris);
+.op span{display:inline-flex;align-items:center;height:40px;padding:0 15px;border-radius:999px;font-size:13.5px;color:var(--gris);
   border:1px solid rgba(232,235,227,.16);transition:color .25s,background .25s,border-color .25s,box-shadow .25s}
 .op:hover span{color:var(--hueso);border-color:rgba(232,235,227,.3)}
 .op input:checked+span{color:var(--hueso);background:rgba(167,216,184,.14);border-color:transparent;box-shadow:var(--borde-vidrio-suave)}
@@ -377,11 +415,6 @@ main{position:relative;z-index:2}
 <body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs id="filtros-vidrio"></defs></svg>
-
-<div class="intro" aria-hidden="true">
-  <div class="intro-marca">mi <span>cartera</span></div>
-  <div class="intro-linea"><i></i></div>
-</div>
 
 <div class="ambiente" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grano"></div></div>
 <div class="luz-cursor" aria-hidden="true"></div>
@@ -421,61 +454,82 @@ main{position:relative;z-index:2}
         <span class="linea"><span>todo tu dinero,</span></span>
         <span class="linea"><span>en un <em>número</em>.</span></span>
       </h1>
-      <p class="hero-sub"><span>Nu, Revolut, tus cajitas, tu bolsa, tu efectivo. Mi Cartera los junta en una pantalla y te dice cuánto llevas ganado. De verdad.</span></p>
+      <p class="hero-sub"><span>Nu, Revolut, tus cajitas, tu bolsa, tu efectivo. Mi Cartera los junta en una pantalla y te dice cuánto llevas ganado, sin conectarse a tu banco.</span></p>
     </div>
 
-    <div class="numero-wrap" aria-hidden="true">
+    <div class="numero-wrap">
       <div class="numero-in">
-        <div class="numero" id="numero"><span class="signo">$</span>0<span class="cent">.00</span></div>
-        <div class="numero-et mono">todo lo tuyo · en un número</div>
+        <span class="numero-ejemplo">cartera de ejemplo</span>
+        <div class="numero" id="numero" aria-hidden="true"><span class="signo">$</span>0<span class="cent">.00</span></div>
+        <div class="numero-et">así se ve todo tu dinero, en un número</div>
         <div class="numero-ganado" id="ganado">+$14,855.65 <span>llevas ganado este año</span></div>
-        <div class="numero-nota mono">cartera de ejemplo</div>
       </div>
     </div>
 
     <div class="hero-capa">
-      <div class="hero-meta mono"><span>MXN</span><span id="fecha">—</span><b id="reloj">—</b></div>
       <div class="vertical mono">hecha en méxico · sin tocar tu banco</div>
-      <div class="desliza mono"><span>desliza</span><i></i></div>
     </div>
   </section>
 
   <!-- 2 · por dentro -->
   <section class="dentro" id="dentro">
-    <div class="dentro-kicker mono"><span>cómo se ve por dentro</span><span class="contador vidrio-ligero"><b id="capN">01</b> / 05</span></div>
+    <div class="dentro-kicker mono"><span>cómo se ve por dentro</span>
+      <nav class="cap-tabs" aria-label="Capítulos">
+        <button class="cap-tab" type="button" data-cap="0" aria-current="true">inicio</button>
+        <button class="cap-tab" type="button" data-cap="1">rendimientos</button>
+        <button class="cap-tab" type="button" data-cap="2">suscripciones</button>
+        <button class="cap-tab" type="button" data-cap="3">inversiones</button>
+        <button class="cap-tab" type="button" data-cap="4">resumen</button>
+      </nav></div>
+    <p class="nota-caps mono">capturas de una cartera de ejemplo · <span class="solo-fino">haz clic en una pantalla</span><span class="solo-tactil">toca una pantalla</span> para verla en grande</p>
     <div class="dentro-grid">
       <div class="capitulos">
         <article class="cap">
-          <span class="num mono">inicio</span>
-          <h2>todo en <em>una</em> pantalla.</h2>
-          <p>Cuentas, cajitas, bolsa y tarjetas. Lo que tienes, lo que debes y lo que de verdad es tuyo, sin abrir seis apps.</p>
+          <div class="cap-txt">
+            <span class="num mono">inicio</span>
+            <h2>todo en <em>una</em> pantalla.</h2>
+            <p>Cuentas, cajitas, bolsa y tarjetas en un solo lugar. Tú anotas tus saldos y tus gastos; lo que ganan tus cajitas y tu bolsa se calcula solo.</p>
+          </div>
+          <button class="mini-tel" type="button" aria-label="Ver en grande: inicio"><img src="assets/grandes/01.webp" alt="Inicio de Mi Cartera con el total de una cartera de ejemplo" loading="lazy"></button>
         </article>
         <article class="cap">
-          <span class="num mono">rendimientos</span>
-          <h2>lo que <em>de verdad</em> rinde.</h2>
-          <p>Tu cajita no paga lo mismo en todo tu saldo. Mi Cartera sabe hasta dónde paga cuánto y te enseña lo que ganas, día por día.</p>
+          <div class="cap-txt">
+            <span class="num mono">rendimientos</span>
+            <h2>lo que <em>de verdad</em> rinde.</h2>
+            <p>Tu cajita no paga lo mismo en todo tu saldo. Mi Cartera sabe hasta dónde paga cuánto y te enseña lo que ganas, día por día.</p>
+          </div>
+          <button class="mini-tel" type="button" aria-label="Ver en grande: rendimientos"><img src="assets/grandes/03.webp" alt="Cuentas con su rendimiento por tramos" loading="lazy"></button>
         </article>
         <article class="cap">
-          <span class="num mono">suscripciones</span>
-          <h2>tus pagos fijos, <em>a tiempo</em>.</h2>
-          <p>El gimnasio, Netflix, la renta. El día que tocan te avisa, se registran con un toque y las que se repiten las encuentra sola.</p>
+          <div class="cap-txt">
+            <span class="num mono">suscripciones</span>
+            <h2>tus pagos fijos, <em>a tiempo</em>.</h2>
+            <p>El gimnasio, Netflix, la renta. El día que tocan te avisa, se registran con un toque y las que se repiten las encuentra sola.</p>
+          </div>
+          <button class="mini-tel" type="button" aria-label="Ver en grande: suscripciones"><img src="assets/grandes/06.webp" alt="Suscripciones y las que la app detecta sola" loading="lazy"></button>
         </article>
         <article class="cap">
-          <span class="num mono">inversiones</span>
-          <h2>tu bolsa, <em>sin adornos</em>.</h2>
-          <p>Lo que pusiste, lo que vale hoy y lo que gana o pierde cada acción. Con dividendos y todo.</p>
+          <div class="cap-txt">
+            <span class="num mono">inversiones</span>
+            <h2>tu bolsa, <em>sin adornos</em>.</h2>
+            <p>Lo que pusiste, lo que vale hoy y lo que gana o pierde cada acción. Con dividendos y todo.</p>
+          </div>
+          <button class="mini-tel" type="button" aria-label="Ver en grande: inversiones"><img src="assets/grandes/09.webp" alt="Tablero de inversiones" loading="lazy"></button>
         </article>
         <article class="cap">
-          <span class="num mono">resumen</span>
-          <h2>el mes, <em>explicado</em>.</h2>
-          <p>Cuánto entró, cuánto salió y cómo vas contra ti mismo. En palabras, no solo en gráficas.</p>
+          <div class="cap-txt">
+            <span class="num mono">resumen</span>
+            <h2>el mes, <em>explicado</em>.</h2>
+            <p>Cuánto entró, cuánto salió y cómo vas contra ti mismo. En palabras, no solo en gráficas.</p>
+          </div>
+          <button class="mini-tel" type="button" aria-label="Ver en grande: resumen"><img src="assets/grandes/13.webp" alt="Resumen y cierre del mes" loading="lazy"></button>
         </article>
       </div>
       <div class="escena">
         <div class="t-entrada">
           <div class="telefono" id="telefono" role="button" tabindex="0" aria-label="Ver esta pantalla en grande">
             <div class="pantalla">
-              <div class="barra-estado" aria-hidden="true"><span>9:41</span><span class="isla"></span>
+              <div class="barra-estado" aria-hidden="true"><span class="hora">9:41</span><span class="isla"></span>
                 <span class="ico">
                   <svg class="senal" viewBox="0 0 17 11"><rect x="0" y="7" width="3" height="4" rx=".8"/><rect x="4.6" y="4.9" width="3" height="6.1" rx=".8"/><rect x="9.2" y="2.5" width="3" height="8.5" rx=".8"/><rect x="13.8" y="0" width="3" height="11" rx=".8"/></svg>
                   <svg class="wifi" viewBox="0 0 16 11.5"><path d="M8 2.3c2.4 0 4.6.9 6.3 2.5L15.6 3.5A10.3 10.3 0 0 0 8 .5 10.3 10.3 0 0 0 .4 3.5l1.3 1.3A8.9 8.9 0 0 1 8 2.3Z"/><path d="M8 5.6c1.5 0 2.9.6 4 1.5l1.3-1.3A7.4 7.4 0 0 0 8 3.8a7.4 7.4 0 0 0-5.3 2l1.3 1.3c1.1-.9 2.5-1.5 4-1.5Z"/><path d="M8 8.9c.7 0 1.3.3 1.8.7L8 11.5 6.2 9.6c.5-.4 1.1-.7 1.8-.7Z"/></svg>
@@ -506,9 +560,15 @@ main{position:relative;z-index:2}
       <span class="kicker mono">y todo lo demás</span>
       <h2 class="titulo-grande">todo lo que hace, <em>en una app</em>.</h2>
       <p>Movimientos, categorías, suscripciones, inversiones, el fondo, metas y deudas.
-        <span class="solo-fino">Pasa el mouse para ver qué es cada pantalla, y haz clic para verla en grande.</span><span class="solo-tactil">Toca una pantalla para ver qué es; tócala otra vez para verla en grande.</span></p>
+        <span class="solo-fino">Pasa el mouse para ver qué es cada pantalla, y haz clic para verla en grande.</span><span class="solo-tactil">Desliza de lado para verlas. Toca una para ver qué es, y otra vez para verla en grande.</span></p>
     </div>
-    <div class="gal-cartas" id="cartas"></div>
+    <div class="gal-nav">
+      <button class="liquido vidrio gal-flecha" id="gal-ant" type="button" aria-label="Pantalla anterior">‹</button>
+      <span class="mono" id="gal-cuenta">01 / 18</span>
+      <button class="liquido vidrio gal-flecha" id="gal-sig" type="button" aria-label="Siguiente pantalla">›</button>
+    </div>
+    <!-- lo horizontal es del carrusel (nativo); lo vertical sigue siendo de la página -->
+    <div class="gal-cartas" id="cartas" data-lenis-prevent-horizontal></div>
   </section>
 
   <!-- 4 · lo que la hace distinta -->
@@ -544,8 +604,8 @@ main{position:relative;z-index:2}
       <div class="cta-diez" aria-hidden="true">10</div>
       <div class="cta-txt">
         <span class="kicker mono" data-rev>por ahora</span>
-        <h2 class="titulo-grande" data-rev>la estoy abriendo a <em>diez</em> personas.</h2>
-        <p data-rev>Te la dejo lista con tus cuentas ya cargadas: tú no configuras nada. Llena esto y me llega por WhatsApp.</p>
+        <h2 class="titulo-grande" data-rev>la estamos abriendo a <em>diez</em> personas.</h2>
+        <p data-rev>Te la dejamos lista con tus cuentas ya cargadas. Después tú solo anotas tus gastos y tus saldos; lo demás lo calcula la app. Llena esto y nos llega por WhatsApp.</p>
       </div>
       <form class="forma vidrio" id="forma" data-rev novalidate>
         <label class="campo" for="f-nombre"><span class="mono">cómo te llamas</span>
@@ -555,14 +615,19 @@ main{position:relative;z-index:2}
             <label class="op"><input type="checkbox" id="f-app-nu" value="Nu"><span>Nu</span></label>
             <label class="op"><input type="checkbox" id="f-app-revolut" value="Revolut"><span>Revolut</span></label>
             <label class="op"><input type="checkbox" id="f-app-mp" value="Mercado Pago"><span>Mercado Pago</span></label>
-            <label class="op"><input type="checkbox" id="f-app-klar" value="Klar"><span>Klar</span></label>
             <label class="op"><input type="checkbox" id="f-app-bbva" value="BBVA"><span>BBVA</span></label>
+            <label class="op"><input type="checkbox" id="f-app-banamex" value="Banamex"><span>Banamex</span></label>
+            <label class="op"><input type="checkbox" id="f-app-banorte" value="Banorte"><span>Banorte</span></label>
             <label class="op"><input type="checkbox" id="f-app-santander" value="Santander"><span>Santander</span></label>
+            <label class="op"><input type="checkbox" id="f-app-hsbc" value="HSBC"><span>HSBC</span></label>
+            <label class="op"><input type="checkbox" id="f-app-klar" value="Klar"><span>Klar</span></label>
             <label class="op"><input type="checkbox" id="f-app-gbm" value="GBM"><span>GBM</span></label>
             <label class="op"><input type="checkbox" id="f-app-cetes" value="Cetes"><span>Cetes</span></label>
             <label class="op"><input type="checkbox" id="f-app-efectivo" value="efectivo"><span>efectivo</span></label>
             <label class="op"><input type="checkbox" id="f-app-otra" value="otra"><span>otra</span></label>
           </div></fieldset>
+        <label class="campo" for="f-otra-cual" id="f-otra-campo" hidden><span class="mono">¿cuál otra?</span>
+          <input type="text" id="f-otra-cual" name="otra" maxlength="60" placeholder="por ejemplo: Scotiabank, Hey Banco"></label>
         <label class="campo" for="f-msg"><span class="mono">qué te gustaría saber de tu dinero <i>(opcional)</i></span>
           <textarea id="f-msg" name="mensaje" maxlength="400" rows="2" placeholder="por ejemplo: cuánto me dan de verdad mis cajitas"></textarea></label>
         <p class="error" id="f-error" role="alert" hidden>Escribe tu nombre para saber quién eres.</p>
@@ -585,9 +650,17 @@ main{position:relative;z-index:2}
   <div class="pie-bajo mono"><span>© 2026</span><span>hecha en méxico</span></div>
 </footer>
 
+<button class="liquido vidrio siguiente" id="siguiente" type="button" aria-label="Ir a la siguiente parte"><span class="sig-txt">siguiente</span>
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3v10M3.5 8.5 8 13l4.5-4.5"/></svg></button>
+
 <div class="visor" id="visor" role="dialog" aria-modal="true" aria-label="Pantalla en grande" data-lenis-prevent hidden>
   <button class="liquido vidrio visor-cerrar" id="visor-cerrar" type="button">cerrar ✕</button>
   <figure class="visor-fig"><img id="visor-img" alt=""><figcaption class="mono" id="visor-txt"></figcaption></figure>
+  <div class="visor-nav" id="visor-nav" hidden>
+    <button class="liquido vidrio gal-flecha" id="visor-ant" type="button" aria-label="Pantalla anterior">‹</button>
+    <span class="mono" id="visor-cuenta"></span>
+    <button class="liquido vidrio gal-flecha" id="visor-sig" type="button" aria-label="Siguiente pantalla">›</button>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
@@ -601,25 +674,21 @@ main{position:relative;z-index:2}
   const pad = n => String(n).padStart(2, '0');
   const html = document.documentElement;
 
-  // ── reloj del hero ─────────────────────────────────────────────────────
-  const tick = () => {
-    const d = new Date();
-    $('#fecha').textContent = pad(d.getDate()) + '.' + pad(d.getMonth() + 1) + '.' + d.getFullYear();
-    $('#reloj').textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
-  };
-  tick(); setInterval(tick, 1000);
-
   // ── el formulario arma el mensaje de WhatsApp (funciona con o sin animación) ──
   const WA = '522216675776';
   const fNombre = $('#f-nombre'), fMsg = $('#f-msg'), fErr = $('#f-error'), fEnviar = $('#f-enviar');
+  const fOtra = $('#f-app-otra'), fOtraCampo = $('#f-otra-campo'), fOtraCual = $('#f-otra-cual');
   const limpio = s => s.replace(/\s+/g, ' ').trim();
+  // "otra" pregunta cuál: si no, el mensaje decía solo "otra"
+  fOtra.addEventListener('change', () => { fOtraCampo.hidden = !fOtra.checked; if (fOtra.checked) fOtraCual.focus(); });
   const armar = () => {
     const nombre = limpio(fNombre.value).slice(0, 60);
-    const apps = $$('#f-apps input:checked').map(i => i.value);
+    const cual = limpio(fOtraCual.value).slice(0, 60);
+    const apps = $$('#f-apps input:checked').map(i => (i === fOtra && cual) ? cual : i.value);
     const msg = limpio(fMsg.value).slice(0, 400);
     let t = `Hola, soy ${nombre || '—'}. Quiero un lugar en Mi Cartera.`;
     if (apps.length) t += `\nTengo mi dinero en: ${apps.join(', ')}.`;
-    if (msg) t += `\n${msg}`;
+    if (msg) t += `\nMe gustaría saber: ${msg}`;
     // un carácter pegado roto (surrogate suelto) hace tronar encodeURIComponent
     try { fEnviar.href = `https://wa.me/${WA}?text=${encodeURIComponent(t)}`; }
     catch (e) { fEnviar.href = `https://wa.me/${WA}?text=${encodeURIComponent(t.replace(/[\uD800-\uDFFF]/g, ''))}`; }
@@ -638,11 +707,25 @@ main{position:relative;z-index:2}
   const tactil = () => matchMedia('(hover: none)').matches;
   let lenis = null, capActual = 0;                 // se llenan más abajo si hay movimiento
   const visor = $('#visor'), vImg = $('#visor-img'), vTxt = $('#visor-txt'), vCerrar = $('#visor-cerrar');
-  let vOrigen = null;
+  let vOrigen = null, vLista = null, vIdx = 0;
+  const vNav = $('#visor-nav'), vCuenta = $('#visor-cuenta'), vAnt = $('#visor-ant'), vSig = $('#visor-sig');
   // mientras el visor está abierto, lo de atrás no se puede enfocar ni tocar (teclado y lector de pantalla)
   const fondo = [$('header'), $('main'), $('footer')];
-  const abrirVisor = (src, texto, origen) => {
+  // Con lista (los 5 capítulos o las 18 pantallas) se puede pasar a la anterior y a la siguiente sin salir.
+  const mostrar = i => {
+    vIdx = (i + vLista.length) % vLista.length;
+    const { src, texto } = vLista[vIdx];
     vImg.src = src; vImg.alt = 'Pantalla de Mi Cartera: ' + texto; vTxt.textContent = texto;
+    vCuenta.textContent = pad(vIdx + 1) + ' / ' + pad(vLista.length);
+    visor.scrollTop = 0;
+  };
+  vAnt.addEventListener('click', e => { e.stopPropagation(); mostrar(vIdx - 1); });
+  vSig.addEventListener('click', e => { e.stopPropagation(); mostrar(vIdx + 1); });
+  const abrirVisor = (src, texto, origen, lista, idx) => {
+    vLista = lista || [{ src, texto }];
+    const hay = vLista.length > 1;
+    vNav.hidden = !hay; visor.classList.toggle('con-lista', hay);
+    mostrar(idx || 0);
     vOrigen = origen || null;
     visor.hidden = false; visor.scrollTop = 0;
     fondo.forEach(el => { el.inert = true; });
@@ -659,16 +742,20 @@ main{position:relative;z-index:2}
     vOrigen && vOrigen.focus({ preventScroll: true });
   };
   vCerrar.addEventListener('click', e => { e.stopPropagation(); cerrarVisor(); });
-  // tocar fuera de la pantalla (y de su nombre) cierra
-  visor.addEventListener('click', e => { if (!e.target.closest('.visor-fig')) cerrarVisor(); });
-  addEventListener('keydown', e => { if (e.key === 'Escape') cerrarVisor(); });
+  // tocar fuera de la pantalla (y de su nombre, y de las flechas) cierra
+  visor.addEventListener('click', e => { if (!e.target.closest('.visor-fig, .visor-nav')) cerrarVisor(); });
+  addEventListener('keydown', e => {
+    if (visor.hidden) return;
+    if (e.key === 'Escape') cerrarVisor();
+    else if (vLista.length > 1 && e.key === 'ArrowLeft') mostrar(vIdx - 1);
+    else if (vLista.length > 1 && e.key === 'ArrowRight') mostrar(vIdx + 1);
+  });
 
+  // los 5 capítulos, como lista para el visor (el teléfono grande y los chicos abren la misma)
+  const CAPS = $$('.cap').map(c => ({ src: $('.mini-tel img', c).getAttribute('src'), texto: $('h2', c).textContent }));
   // el teléfono: tocarlo abre en grande la pantalla del capítulo que se está viendo
   const tel = $('#telefono');
-  const abrirTel = () => {
-    const img = $$('.scr')[capActual];
-    abrirVisor(img.currentSrc || img.src, $$('.cap h2')[capActual].textContent, tel);
-  };
+  const abrirTel = () => abrirVisor(null, null, tel, CAPS, capActual);
   tel.addEventListener('click', abrirTel);
   tel.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrirTel(); } });
 
@@ -678,19 +765,22 @@ main{position:relative;z-index:2}
     'proyección a 30 años', 'el fondo de la universidad', 'el cierre del mes', 'cómo vas contra ti',
     'a dónde se va', 'quién te debe', 'tu calificación', 'tus metas'];
   const capaCartas = $('#cartas');
+  const LISTA = PANTALLAS.map((texto, i) => ({ src: `assets/grandes/${pad(i + 1)}.webp`, texto }));
   const cartas = PANTALLAS.map((nombre, i) => {
     const el = document.createElement('div');
     el.className = 'carta'; el.tabIndex = 0;
     el.setAttribute('role', 'button');
     el.setAttribute('aria-label', 'Ver en grande: ' + nombre);
-    el.innerHTML = `<div class="carta-in"><div class="cara frente"><img src="assets/tarjetas/${pad(i + 1)}.webp" alt="" loading="lazy"></div>` +
+    el.innerHTML = `<div class="carta-in"><div class="cara frente"><img src="assets/tarjetas/${pad(i + 1)}.webp" alt="" loading="lazy">` +
+                   `<span class="etiqueta">${nombre}</span></div>` +
                    `<div class="cara reverso"><span class="mono">${pad(i + 1)}</span><b>${nombre}</b>` +
                    `<small>${tactil() ? 'tócala otra vez para verla en grande' : 'clic para verla en grande'}</small></div></div>`;
-    const abrir = () => abrirVisor(`assets/grandes/${pad(i + 1)}.webp`, nombre, el);
-    // Con mouse, pasar encima la voltea y el clic la abre. Con el dedo no hay
-    // "pasar encima": el primer toque la voltea (y regresa las demás), el segundo la abre.
+    const abrir = () => abrirVisor(null, null, el, LISTA, i);
+    // Con mouse, pasar encima la voltea y el clic la abre. En el carrusel del
+    // celular el nombre ya se ve abajo de cada una: un toque la abre, igual que
+    // los teléfonos de arriba. Solo en el arco con dedo (tableta) se voltea primero.
     el.addEventListener('click', () => {
-      if (!tactil()) { abrir(); return; }
+      if (!tactil() || !html.classList.contains('fijo')) { abrir(); return; }
       if (el.classList.contains('volteada')) { el.classList.remove('volteada'); abrir(); return; }
       cartas.forEach(c => c.el.classList.remove('volteada'));
       el.classList.add('volteada');
@@ -700,15 +790,53 @@ main{position:relative;z-index:2}
     return { el, x: 0, y: 0, r: 0, s: 0.4, o: 0, vx: 0, vy: 0, vr: 0, vs: 0, vo: 0 };
   });
 
+  // ── los teléfonos chicos de cada capítulo (celular): tocarlos los abre en grande ──
+  $$('.mini-tel').forEach((b, i) => b.addEventListener('click', () => abrirVisor(null, null, b, CAPS, i)));
+
+  // ── el carrusel (celular): flechas y "3 / 18" ─────────────────────────
+  const paso = () => (cartas[0].el.offsetWidth || 150) + 16;
+  const galCuenta = $('#gal-cuenta'), galAnt = $('#gal-ant'), galSig = $('#gal-sig');
+  const moverCarrusel = dir => capaCartas.scrollBy({ left: dir * paso(), behavior: reducido ? 'auto' : 'smooth' });
+  galAnt.addEventListener('click', () => moverCarrusel(-1));
+  galSig.addEventListener('click', () => moverCarrusel(1));
+  const cuentaCarrusel = () => {
+    const i = Math.max(0, Math.min(PANTALLAS.length - 1, Math.round(capaCartas.scrollLeft / paso())));
+    galCuenta.textContent = pad(i + 1) + ' / ' + PANTALLAS.length;
+    galAnt.disabled = i === 0; galSig.disabled = i === PANTALLAS.length - 1;   // en las orillas no hay a dónde ir
+  };
+  capaCartas.addEventListener('scroll', cuentaCarrusel, { passive: true });
+  cuentaCarrusel();
+
+  // ── "siguiente": lleva a la siguiente parte de la página ──────────────
+  // Las paradas se calculan al momento (las secciones fijas cambian de alto).
+  const arriba = el => el.getBoundingClientRect().top + scrollY;
+  let paradas = () => [...[$('#dentro')], ...$$('.cap'), $('#todo'), $('#distinta'), $('#confianza'), $('#lugar')]
+    .map(el => Math.round(arriba(el) - (el.classList.contains('cap') ? 70 : 0)));
+  let irA = y => scrollTo({ top: y, behavior: reducido ? 'auto' : 'smooth' });
+  const bSig = $('#siguiente');
+  const proxima = () => paradas().sort((a, b) => a - b).find(y => y > scrollY + 12);
+  bSig.addEventListener('click', () => { const y = proxima(); if (y !== undefined) irA(y); });
+  let pendiente = false;
+  const revisarSig = () => {
+    pendiente = false;
+    bSig.classList.toggle('oculto', proxima() === undefined);
+    bSig.classList.toggle('compacto', scrollY > 40);   // con palabra solo al principio
+  };
+  addEventListener('scroll', () => { if (!pendiente) { pendiente = true; requestAnimationFrame(revisarSig); } }, { passive: true });
+  addEventListener('load', revisarSig);
+
   // Sin GSAP (CDN caído) o con movimiento reducido: la página queda estática y completa.
-  if (!window.gsap || !window.ScrollTrigger || reducido) {
-    html.classList.remove('va-mov');
-    const intro = $('.intro'); intro && intro.remove();
-    return;
-  }
+  if (!window.gsap || !window.ScrollTrigger || reducido) return;
   html.classList.add('con-mov');
   gsap.registerPlugin(ScrollTrigger);
   ScrollTrigger.config({ ignoreMobileResize: true });
+
+  // Computadora = la forma fija (teléfono que se queda, arco de tarjetas).
+  // Celular = la página baja normal. Si se cruza la frontera (girar una tableta), se recarga.
+  const escritorio = matchMedia('(min-width: 861px)');
+  const fijo = escritorio.matches;
+  if (fijo) html.classList.add('fijo');
+  escritorio.addEventListener('change', () => location.reload());
 
   // ── scroll suave ──────────────────────────────────────────────────────
   if (window.Lenis) {
@@ -716,8 +844,8 @@ main{position:relative;z-index:2}
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add(t => lenis.raf(t * 1000));
     gsap.ticker.lagSmoothing(0);
-    lenis.stop();
     window.__lenis = lenis;
+    irA = y => lenis.scrollTo(y, { duration: 1.2 });
   }
   const fino = matchMedia('(pointer: fine)').matches;
   const fmt = new Intl.NumberFormat('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -821,7 +949,7 @@ main{position:relative;z-index:2}
       return { x1: x - m, y1: y - m, x2: x + el.offsetWidth + m, y2: y + el.offsetHeight + m };
     });
     const base = $('.hero').getBoundingClientRect();
-    $$('.vertical, .desliza').forEach(el => {
+    $$('.vertical').forEach(el => {
       const k = el.getBoundingClientRect();
       if (k.width) cajas.push({ x1: k.left - base.left - 8, y1: k.top - base.top - 8, x2: k.right - base.left + 8, y2: k.bottom - base.top + 8 });
     });
@@ -920,7 +1048,7 @@ main{position:relative;z-index:2}
   }
   const galIntro = $('.gal-intro'), galTxt = $('.gal-arco-txt');
   function pintarGaleria(ahora, dt) {
-    if (!gal.visible) return;
+    if (!fijo || !gal.visible) return;              // en el celular es un carrusel normal
     // el avance del scroll también llega con resorte (como el morph del original)
     const metaMorph = gal.fase === 'circulo' ? Math.min(1, gal.p / 0.25) : 0;
     const metaGiro = Math.max(0, Math.min(1, (gal.p - 0.25) / 0.75));
@@ -950,10 +1078,10 @@ main{position:relative;z-index:2}
   const despertar = () => {
     if (gal.fase !== 'dormida') return;
     gal.fase = 'dispersa';
-    relojes.push(setTimeout(() => { if (gal.fase === 'dispersa') gal.fase = 'linea'; }, 450));
-    relojes.push(setTimeout(() => { gal.fase = 'circulo'; }, 2200));
+    relojes.push(setTimeout(() => { if (gal.fase === 'dispersa') gal.fase = 'linea'; }, 300));
+    relojes.push(setTimeout(() => { gal.fase = 'circulo'; }, 1300));
   };
-  new IntersectionObserver(([e]) => {
+  if (fijo) new IntersectionObserver(([e]) => {
     gal.visible = e.isIntersecting;
     if (e.isIntersecting) despertar();
     else cartas.forEach(c => c.el.classList.remove('volteada'));   // al regresar, todas de frente
@@ -973,17 +1101,12 @@ main{position:relative;z-index:2}
   });
   addEventListener('resize', medir);
 
-  // ── intro ─────────────────────────────────────────────────────────────
-  const intro = $('.intro');
-  gsap.timeline({ defaults: { ease: 'expo.out' }, onComplete() {
-      html.classList.remove('va-mov'); intro.remove(); lenis && lenis.start(); } })
-    .to('.intro-marca', { opacity: 1, filter: 'blur(0px)', duration: 0.8 })
-    .to('.intro-linea i', { scaleX: 1, duration: 0.7, ease: 'power2.inOut' }, 0.15)
-    .to(intro, { yPercent: -100, duration: 0.95, ease: 'expo.inOut' }, 0.95)
-    .from('.hero-titulo .linea > span', { yPercent: 115, duration: 1.2, stagger: 0.09 }, 1.4)
-    .from('.hero-sub > span', { opacity: 0, y: 18, filter: 'blur(8px)', duration: 1 }, 1.65)
-    .from('.nav, .hero-meta, .vertical, .desliza', { opacity: 0, duration: 1, clearProps: 'opacity' }, 1.7)
-    .to(orb, { aparece: 1, duration: 1.8, ease: 'power2.out' }, 1.25);
+  // ── entrada: sin cortina; el título sube y las cuentas aparecen, sin detener nada ──
+  gsap.timeline({ defaults: { ease: 'expo.out' } })
+    .from('.hero-titulo .linea > span', { yPercent: 115, duration: 1.1, stagger: 0.08 }, 0.05)
+    .from('.hero-sub > span', { opacity: 0, y: 14, duration: 0.9 }, 0.3)
+    .from('.nav, .vertical, #siguiente', { opacity: 0, duration: 0.9, clearProps: 'opacity' }, 0.35)
+    .to(orb, { aparece: 1, duration: 1.6, ease: 'power2.out' }, 0);
 
   // ── hero con scroll: el título se va, las cuentas colapsan, nace el número ──
   const numero = $('#numero'), cuenta = { v: 0 };
@@ -991,59 +1114,83 @@ main{position:relative;z-index:2}
     const [ent, dec] = fmt.format(cuenta.v).split('.');
     numero.innerHTML = '<span class="signo">$</span>' + ent + '<span class="cent">.' + dec + '</span>';
   };
-  gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: '+=160%', scrub: 1, pin: true } })
-    .to('.hero-centro', { y: -60, opacity: 0, filter: 'blur(12px)', duration: 0.3, ease: 'power1.in' }, 0)
-    .to('.hero-capa', { opacity: 0, duration: 0.2 }, 0)
-    .to(orb, { r: 0, duration: 0.52, ease: 'power2.in' }, 0.04)
-    .to(orb, { rayos: 1, duration: 0.2, ease: 'none' }, 0.14)
-    .to(orb, { rayos: 0, duration: 0.14, ease: 'none' }, 0.42)
-    .fromTo('.destello', { scale: 0.15, opacity: 0 }, { scale: 1.35, opacity: 1, duration: 0.1, ease: 'power2.out' }, 0.52)
-    .to('.destello', { scale: 1, opacity: 0.3, duration: 0.2, ease: 'power1.out' }, 0.62)
+  // Tramos cortos: en el celular basta un deslizón para llegar al número. El
+  // título aguanta el primer roce del dedo (antes se iba al tocarlo) y el número
+  // llega apenas se va el texto, sin una pantalla vacía de por medio.
+  const tlHero = gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: fijo ? '+=110%' : '+=70%', scrub: 1, pin: true } });
+  tlHero
+    .to('.hero-centro', { y: -50, opacity: 0, filter: 'blur(10px)', duration: 0.22, ease: 'power1.in' }, 0.14)
+    .to('.hero-capa', { opacity: 0, duration: 0.2 }, 0.1)
+    .to(orb, { r: 0, duration: 0.4, ease: 'power2.in' }, 0.08)
+    .to(orb, { rayos: 1, duration: 0.14, ease: 'none' }, 0.14)
+    .to(orb, { rayos: 0, duration: 0.12, ease: 'none' }, 0.34)
+    .fromTo('.destello', { scale: 0.15, opacity: 0 }, { scale: 1.35, opacity: 1, duration: 0.1, ease: 'power2.out' }, 0.38)
+    .to('.destello', { scale: 1, opacity: 0.3, duration: 0.2, ease: 'power1.out' }, 0.48)
     .fromTo('.numero-wrap', { opacity: 0, scale: 0.9, filter: 'blur(16px)' },
-                            { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.18, ease: 'power2.out' }, 0.54)
-    .fromTo(cuenta, { v: 0 }, { v: 204668.59, duration: 0.3, ease: 'power3.out', onUpdate: pintarNumero }, 0.54)
-    .to('#ganado', { opacity: 1, duration: 0.1 }, 0.8)
-    .fromTo('.numero-nota', { opacity: 0 }, { opacity: 1, duration: 0.1 }, 0.84)
-    .to({}, { duration: 0.12 });
+                            { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.16, ease: 'power2.out' }, 0.38)
+    .fromTo(cuenta, { v: 0 }, { v: 204668.59, duration: 0.28, ease: 'power3.out', onUpdate: pintarNumero }, 0.38)
+    .to('#ganado', { opacity: 1, duration: 0.1 }, 0.62)
+    .to({}, { duration: 0.24 });                     // el número se queda quieto para leerlo
 
-  // ── el teléfono llega desde abajo y el número se despide ──────────────
-  gsap.timeline({ scrollTrigger: { trigger: '.dentro', start: 'top bottom', end: 'top top', scrub: 1, invalidateOnRefresh: true } })
-    .fromTo('.t-entrada', { y: () => innerHeight * 0.45, rotateX: 32, scale: 0.86, opacity: 0.2 },
-                          { y: 0, rotateX: 0, scale: 1, opacity: 1, ease: 'none', duration: 1 }, 0)
-    .to('.numero-in', { y: () => -innerHeight * 0.14, opacity: 0, filter: 'blur(12px)', ease: 'power1.in', duration: 0.55 }, 0);
+  let stCaps = null, stGal = null, yCap = () => 0;
+  if (fijo) {
+    // ── el teléfono llega desde abajo y el número se despide ────────────
+    gsap.timeline({ scrollTrigger: { trigger: '.dentro', start: 'top bottom', end: 'top top', scrub: 1, invalidateOnRefresh: true } })
+      .fromTo('.t-entrada', { y: () => innerHeight * 0.45, rotateX: 32, scale: 0.86, opacity: 0.2 },
+                            { y: 0, rotateX: 0, scale: 1, opacity: 1, ease: 'none', duration: 1 }, 0)
+      .to('.numero-in', { y: () => -innerHeight * 0.14, opacity: 0, filter: 'blur(12px)', ease: 'power1.in', duration: 0.55 }, 0);
 
-  // ── capítulos: el teléfono se queda y cambia de pantalla ──────────────
-  const caps = $$('.cap'), scrs = $$('.scr'), capN = $('#capN'), barra = $('#barraCaps'), esc = $('#escaner');
-  gsap.set(caps.slice(1), { opacity: 0 });
-  gsap.set(scrs.slice(1), { opacity: 0 });
-  gsap.set(esc, { opacity: 0 });
-  // El contador (y el visor, que abre la pantalla del capítulo actual) lee el tiempo de la línea (no el scroll): con scrub la línea va
-  // detrás del scroll, y si se lee el scroll el número cambia antes que el texto.
-  const tlCaps = gsap.timeline({
-    scrollTrigger: { trigger: '.dentro', start: 'top top', end: () => '+=' + innerHeight * 4.4, scrub: 1, pin: true, invalidateOnRefresh: true },
-    onUpdate() {
-      barra.style.transform = `scaleX(${tlCaps.progress()})`;
-      const i = Math.max(0, Math.min(4, Math.floor(tlCaps.time() - 0.2)));
-      if (i !== capActual) { capActual = i; capN.textContent = pad(i + 1); }
-    } });
-  // El teléfono ya no gira durante los capítulos: plano se lee nítido.
-  tlCaps.to({}, { duration: 5 }, 0);
-  for (let i = 1; i < 5; i++) {
-    tlCaps
-      .to(caps[i - 1], { opacity: 0, y: -24, filter: 'blur(4px)', duration: 0.26, ease: 'power2.in' }, i)
-      .fromTo(caps[i], { opacity: 0, y: 28, filter: 'blur(4px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.36, ease: 'power2.out' }, i + 0.26)
-      .to(scrs[i - 1], { opacity: 0, scale: 0.97, duration: 0.4, ease: 'power2.in' }, i)
-      .fromTo(scrs[i], { opacity: 0, yPercent: 7, scale: 1.03 }, { opacity: 1, yPercent: 0, scale: 1, duration: 0.5, ease: 'power3.out' }, i + 0.12)
-      .fromTo(esc, { top: '-6%', opacity: 1 }, { top: '104%', opacity: 0.2, duration: 0.55, ease: 'power1.inOut', immediateRender: false }, i + 0.08)
-      .set(esc, { opacity: 0 }, i + 0.64);
+    // ── capítulos: el teléfono se queda y cambia de pantalla ────────────
+    const caps = $$('.cap'), scrs = $$('.scr'), barra = $('#barraCaps'), esc = $('#escaner'), tabs = $$('.cap-tab');
+    gsap.set(caps.slice(1), { opacity: 0 });
+    gsap.set(scrs.slice(1), { opacity: 0 });
+    gsap.set(esc, { opacity: 0 });
+    const marcar = i => tabs.forEach((t, k) => t.setAttribute('aria-current', String(k === i)));
+    // La pestaña activa (y el visor, que abre la pantalla del capítulo actual) lee el
+    // tiempo de la línea, no el scroll: con scrub la línea va detrás del scroll.
+    const tlCaps = gsap.timeline({
+      scrollTrigger: { trigger: '.dentro', start: 'top top', end: () => '+=' + innerHeight * 3, scrub: 1, pin: true, invalidateOnRefresh: true },
+      onUpdate() {
+        barra.style.transform = `scaleX(${tlCaps.progress()})`;
+        const i = Math.max(0, Math.min(4, Math.floor(tlCaps.time() - 0.2)));
+        if (i !== capActual) { capActual = i; marcar(i); }
+      } });
+    tlCaps.to({}, { duration: 5 }, 0);           // el teléfono no gira: plano se lee nítido
+    for (let i = 1; i < 5; i++) {
+      tlCaps
+        .to(caps[i - 1], { opacity: 0, y: -24, filter: 'blur(4px)', duration: 0.26, ease: 'power2.in' }, i)
+        .fromTo(caps[i], { opacity: 0, y: 28, filter: 'blur(4px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.36, ease: 'power2.out' }, i + 0.26)
+        .to(scrs[i - 1], { opacity: 0, scale: 0.97, duration: 0.4, ease: 'power2.in' }, i)
+        .fromTo(scrs[i], { opacity: 0, yPercent: 7, scale: 1.03 }, { opacity: 1, yPercent: 0, scale: 1, duration: 0.5, ease: 'power3.out' }, i + 0.12)
+        .fromTo(esc, { top: '-6%', opacity: 1 }, { top: '104%', opacity: 0.2, duration: 0.55, ease: 'power1.inOut', immediateRender: false }, i + 0.08)
+        .set(esc, { opacity: 0 }, i + 0.64);
+    }
+    stCaps = tlCaps.scrollTrigger;
+    // cada pestaña lleva a donde su capítulo ya se ve completo
+    yCap = i => stCaps.start + (stCaps.end - stCaps.start) * Math.min(1, (i + 0.75) / 5);
+    tabs.forEach(t => t.addEventListener('click', () => irA(yCap(+t.dataset.cap))));
+
+    // ── la galería se fija mientras las tarjetas pasan de círculo a arco ──
+    stGal = ScrollTrigger.create({ trigger: '.galeria', start: 'top top', end: () => '+=' + innerHeight * 1.7, pin: true, invalidateOnRefresh: true,
+      onUpdate(self) {
+        gal.p = self.progress;
+        if (self.progress > 0.02 && gal.fase !== 'circulo') { despertar(); relojes.forEach(clearTimeout); gal.fase = 'circulo'; }
+      } });
+  } else {
+    // celular: el número simplemente sube con la página (desvanecerlo dejaba una
+    // pantalla vacía), y cada capítulo aparece al llegar
+    $$('.cap').forEach(c => c.setAttribute('data-rev', ''));
   }
 
-  // ── la galería se fija mientras las tarjetas pasan de círculo a arco ──
-  ScrollTrigger.create({ trigger: '.galeria', start: 'top top', end: () => '+=' + innerHeight * 2.4, pin: true, invalidateOnRefresh: true,
-    onUpdate(self) {
-      gal.p = self.progress;
-      if (self.progress > 0.02 && gal.fase !== 'circulo') { despertar(); relojes.forEach(clearTimeout); gal.fase = 'circulo'; }
-    } });
+  // "siguiente" con movimiento: primero el número, luego cada capítulo, la galería y el resto
+  paradas = () => {
+    const ps = [tlHero.scrollTrigger.end];
+    if (fijo) { for (let i = 0; i < 5; i++) ps.push(yCap(i)); ps.push(stGal.start + (stGal.end - stGal.start) * 0.35); }
+    else { $$('.cap').forEach(c => ps.push(arriba(c) - 70)); ps.push(arriba($('.gal-arco-txt')) - 70); }
+    [$('#distinta'), $('#confianza'), $('#lugar')].forEach(el => ps.push(arriba(el)));
+    return ps.map(Math.round);
+  };
+  ScrollTrigger.addEventListener('refresh', revisarSig);
 
   // luz tenue que sigue al mouse (solo en computadora)
   if (fino) {
