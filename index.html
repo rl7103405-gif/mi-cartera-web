@@ -59,7 +59,9 @@ html.lenis, html.lenis body{height:auto}
 .lenis.lenis-smooth iframe{pointer-events:none}
 
 *{margin:0;padding:0;box-sizing:border-box}
-html{background:var(--noche);color:var(--hueso);-webkit-text-size-adjust:100%}
+html{background:var(--noche);color:var(--hueso);-webkit-text-size-adjust:100%;scrollbar-gutter:stable}
+/* con el visor abierto, la página de atrás no se mueve (el gutter evita el brinco del ancho) */
+html.visor-abierto{overflow:hidden}
 body{font-family:var(--display);font-weight:400;background:var(--noche);color:var(--hueso);overflow-x:hidden;
      -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 a{color:inherit;text-decoration:none}
@@ -88,6 +90,7 @@ h1,h2,h3{text-wrap:balance}
 
 /* botón líquido: cápsula de vidrio que crece un poco al pasar el mouse */
 .liquido{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:999px;
+  -webkit-appearance:none;appearance:none;border:0;background:transparent;font-family:inherit;
   height:40px;padding:0 20px;font-size:13px;font-weight:500;color:var(--hueso);white-space:nowrap;cursor:pointer;
   --tinte:rgba(167,216,184,.12);--desenfoque:4px;transition:transform .35s var(--suave)}
 .liquido:hover{transform:scale(1.05)}
@@ -175,10 +178,6 @@ main{position:relative;z-index:2}
 .numero-ganado{margin-top:16px;font-size:clamp(16px,1.5vw,21px);color:var(--acento);font-variant-numeric:tabular-nums;opacity:0}
 .numero-ganado span{color:var(--gris)}
 .numero-nota{margin-top:44px;color:var(--gris-2);opacity:0}
-/* la lente: una gota de vidrio que sigue al mouse y dobla lo que tiene abajo */
-.lente{display:none}
-.con-lente .lente{display:block;position:absolute;left:0;top:0;width:180px;height:180px;margin:-90px 0 0 -90px;border-radius:50%;
-  z-index:7;pointer-events:none;will-change:transform;--desenfoque:.6px;--tinte:rgba(232,235,227,.015)}
 @media (max-width:760px){ .vertical{display:none} .hero-meta{top:78px;left:16px;gap:12px} }
 
 /* ── 2 · por dentro: el teléfono fijo y los capítulos ──────────────────── */
@@ -199,19 +198,26 @@ main{position:relative;z-index:2}
 .cap p{margin-top:22px;font-size:clamp(15px,1.15vw,18px);line-height:1.6;color:var(--gris);max-width:430px}
 .escena{position:relative;display:grid;place-items:center;perspective:1400px}
 .con-mov .escena{height:100%}
-.t-entrada,.t-tilt{transform-style:preserve-3d;will-change:transform}
-/* el marco del teléfono es una losa de vidrio: canto claro y translúcido */
-.telefono{position:relative;height:min(72vh,690px);height:min(72svh,690px);aspect-ratio:390/870;max-width:100%;border-radius:50px;padding:11px;
+/* El marco del teléfono es una losa de vidrio. Alto Y ancho explícitos: con
+   aspect-ratio + max-width:100% Safari lo aplastaba a una rayita. Sin
+   will-change ni giro 3D en reposo, que dejaban la pantalla borrosa. */
+.telefono{--alto:min(72vh,690px);position:relative;height:var(--alto);width:calc(var(--alto) * 390 / 870);max-width:calc(100vw - 32px);
+  border-radius:50px;padding:11px;cursor:zoom-in;
   background:linear-gradient(145deg,rgba(232,235,227,.2),rgba(232,235,227,.05) 38%,rgba(167,216,184,.07) 70%,rgba(232,235,227,.16));
-  box-shadow:var(--borde-vidrio),0 50px 120px -30px rgba(0,0,0,.85),0 0 110px -20px rgba(47,111,79,.55);
-  transform-style:preserve-3d;will-change:transform}
+  box-shadow:var(--borde-vidrio),0 50px 120px -30px rgba(0,0,0,.85),0 0 110px -20px rgba(47,111,79,.55)}
+@supports (height:1svh){ .telefono{--alto:min(72svh,690px)} }
 .pantalla{position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;background:#ecf2ea;display:flex;flex-direction:column;
   box-shadow:0 0 0 1px rgba(0,0,0,.35)}
-.barra-estado{flex:0 0 auto;height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 22px 0 26px;
-  font-size:12px;font-weight:600;color:#1a2e22;position:relative}
-.barra-estado .isla{position:absolute;left:50%;top:9px;width:31%;height:20px;margin-left:-15.5%;border-radius:20px;background:#0b0e0c}
-.barra-estado .ico{display:flex;gap:5px;align-items:center}
-.barra-estado .ico i{display:block;background:#1a2e22;border-radius:1px}
+/* barra de estado de iPhone: hora, isla y los tres íconos dibujados en SVG */
+.barra-estado{flex:0 0 auto;height:36px;display:flex;align-items:center;justify-content:space-between;padding:2px 9% 0 11%;
+  font-size:12.5px;font-weight:600;letter-spacing:-.01em;color:#1a2e22;position:relative;font-variant-numeric:tabular-nums}
+.barra-estado .isla{position:absolute;left:50%;top:8px;width:30%;height:21px;transform:translateX(-50%);border-radius:20px;background:#0b0e0c}
+.barra-estado .ico{display:flex;gap:.36em;align-items:center}
+.barra-estado svg{display:block;fill:#1a2e22}
+.barra-estado .senal{width:1.3em;height:.82em}
+.barra-estado .wifi{width:1.16em;height:.84em}
+.barra-estado .bateria{width:1.95em;height:.92em}
+.telefono:focus-visible{outline:2px solid var(--acento);outline-offset:6px}
 .pantallas{position:relative;flex:1}
 .scr{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
 .scr+.scr{display:none}
@@ -230,11 +236,12 @@ main{position:relative;z-index:2}
   .dentro-grid{grid-template-columns:1fr}
   .con-mov .dentro-grid{grid-template-rows:1fr auto;padding:122px 16px 34px;gap:22px}
   .escena{order:-1}
-  .telefono{height:min(50vh,480px);height:min(50svh,480px);border-radius:38px;padding:8px}
+  .telefono{--alto:min(50vh,480px);border-radius:38px;padding:8px}
+  @supports (height:1svh){ .telefono{--alto:min(50svh,480px)} }
   .pantalla{border-radius:30px}
   .reflejo{inset:8px;border-radius:30px}
-  .barra-estado{height:24px;font-size:9px;padding:0 16px 0 20px}
-  .barra-estado .isla{top:6px;height:14px}
+  .barra-estado{height:26px;font-size:9.5px;padding:1px 9% 0 11%}
+  .barra-estado .isla{top:6px;height:15px}
   .con-mov .dentro-kicker{top:76px;left:16px;right:16px}
   .con-mov .capitulos{min-height:176px;align-items:start}
   .cap .num{margin-bottom:10px}
@@ -258,20 +265,44 @@ main{position:relative;z-index:2}
 .solo-tactil{display:none}
 @media (hover:none){ .solo-fino{display:none} .solo-tactil{display:inline} }
 .gal-cartas{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:56px}
-.carta{width:72px;height:102px;perspective:900px;cursor:pointer}
+/* La tarjeta mide lo que mide en el arco (su tamaño más grande): en el círculo
+   y en la fila solo se encoge. Crecer por escala la dejaba borrosa. */
+.carta{--cw:150px;--ch:213px;width:var(--cw);height:var(--ch);perspective:1000px;cursor:pointer}
+@media (max-width:767px){ .carta{--cw:120px;--ch:171px} }
 .con-mov .gal-cartas{position:absolute;inset:0;margin:0;display:block}
-.con-mov .carta{position:absolute;left:50%;top:50%;margin:-51px 0 0 -36px;opacity:0;will-change:transform,opacity}
+.con-mov .carta{position:absolute;left:50%;top:50%;margin:calc(var(--ch) / -2) 0 0 calc(var(--cw) / -2);opacity:0}
 .carta-in{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.3,1.35,.4,1)}
-.carta:hover .carta-in,.carta.volteada .carta-in{transform:rotateY(180deg)}
-.cara{position:absolute;inset:0;border-radius:11px;overflow:hidden;-webkit-backface-visibility:hidden;backface-visibility:hidden;
-  box-shadow:0 12px 30px -10px rgba(0,0,0,.7),0 0 0 1px rgba(232,235,227,.14)}
+@media (hover:hover){ .carta:hover .carta-in{transform:rotateY(180deg)} }
+.carta.volteada .carta-in{transform:rotateY(180deg)}
+.carta:focus-visible{outline:2px solid var(--acento);outline-offset:4px;border-radius:14px}
+.cara{position:absolute;inset:0;border-radius:14px;overflow:hidden;-webkit-backface-visibility:hidden;backface-visibility:hidden;
+  box-shadow:0 14px 34px -10px rgba(0,0,0,.7),0 0 0 1px rgba(232,235,227,.14)}
 .cara img{width:100%;height:100%;object-fit:cover;object-position:top}
-.cara.frente::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,0) 40%),rgba(12,16,13,.08);transition:background .4s}
+.cara.frente::after{content:"";position:absolute;inset:0;background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,0) 40%),rgba(12,16,13,.06);transition:background .4s}
 .carta:hover .cara.frente::after{background:rgba(12,16,13,0)}
-.cara.reverso{transform:rotateY(180deg);display:flex;flex-direction:column;justify-content:flex-end;gap:4px;padding:9px;text-align:left;
-  background:linear-gradient(160deg,rgba(167,216,184,.28),rgba(47,111,79,.35) 45%,rgba(12,16,13,.92));box-shadow:var(--borde-vidrio-suave)}
-.cara.reverso .mono{font-size:8px;letter-spacing:.12em;color:var(--acento)}
-.cara.reverso b{font-weight:500;font-size:10.5px;line-height:1.2;color:var(--hueso)}
+.cara.frente{transform:rotateY(0deg);transition:visibility 0s .16s}
+.carta.volteada .cara.frente{visibility:hidden}
+@media (hover:hover){ .carta:hover .cara.frente{visibility:hidden} }
+/* Safari a veces aplana el 3D y pinta el reverso encima (en espejo) aunque la
+   tarjeta no esté volteada: por eso el reverso solo existe a media vuelta. */
+.cara.reverso{transform:rotateY(180deg);display:flex;flex-direction:column;justify-content:flex-end;gap:6px;padding:14px;text-align:left;
+  background:linear-gradient(160deg,#3d5f4c,#22402f 45%,#0f1611);box-shadow:var(--borde-vidrio-suave);
+  visibility:hidden;transition:visibility 0s .16s}
+.carta.volteada .cara.reverso{visibility:visible}
+@media (hover:hover){ .carta:hover .cara.reverso{visibility:visible} }
+.cara.reverso .mono{font-size:10px;letter-spacing:.12em;color:var(--acento)}
+.cara.reverso b{font-weight:500;font-size:15px;line-height:1.2;letter-spacing:-.01em;color:var(--hueso)}
+.cara.reverso small{margin-top:6px;font-size:11px;line-height:1.35;color:var(--gris)}
+@media (max-width:767px){ .cara.reverso{padding:11px} .cara.reverso b{font-size:13px} .cara.reverso small{font-size:10px} }
+
+/* ── el visor: una pantalla en grande, encima de todo ──────────────────── */
+.visor{position:fixed;inset:0;z-index:90;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  background:rgba(8,11,9,.8);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+  display:flex;justify-content:center;align-items:flex-start;padding:calc(76px + env(safe-area-inset-top, 0px)) 16px 48px;cursor:zoom-out}
+.visor-fig{width:min(440px,100%);margin:auto 0;cursor:default}
+.visor-fig img{width:100%;height:auto;border-radius:26px;box-shadow:0 0 0 1px rgba(232,235,227,.16),0 40px 100px -20px rgba(0,0,0,.8)}
+.visor-fig figcaption{margin-top:18px;text-align:center}
+.visor-cerrar{position:fixed;top:calc(16px + env(safe-area-inset-top, 0px));right:16px;z-index:91;--tinte:rgba(12,16,13,.55)}
 
 /* ── secciones de texto ────────────────────────────────────────────────── */
 .seccion{position:relative;padding:clamp(120px,14vw,210px) var(--lado)}
@@ -402,8 +433,6 @@ main{position:relative;z-index:2}
       </div>
     </div>
 
-    <div class="lente vidrio" id="lente" aria-hidden="true"></div>
-
     <div class="hero-capa">
       <div class="hero-meta mono"><span>MXN</span><span id="fecha">—</span><b id="reloj">—</b></div>
       <div class="vertical mono">hecha en méxico · sin tocar tu banco</div>
@@ -443,24 +472,28 @@ main{position:relative;z-index:2}
         </article>
       </div>
       <div class="escena">
-        <div class="t-entrada"><div class="t-tilt">
-          <div class="telefono" id="telefono">
+        <div class="t-entrada">
+          <div class="telefono" id="telefono" role="button" tabindex="0" aria-label="Ver esta pantalla en grande">
             <div class="pantalla">
-              <div class="barra-estado"><span>9:41</span><span class="isla"></span>
-                <span class="ico"><i style="width:14px;height:8px"></i><i style="width:18px;height:9px;border-radius:2px"></i></span></div>
+              <div class="barra-estado" aria-hidden="true"><span>9:41</span><span class="isla"></span>
+                <span class="ico">
+                  <svg class="senal" viewBox="0 0 17 11"><rect x="0" y="7" width="3" height="4" rx=".8"/><rect x="4.6" y="4.9" width="3" height="6.1" rx=".8"/><rect x="9.2" y="2.5" width="3" height="8.5" rx=".8"/><rect x="13.8" y="0" width="3" height="11" rx=".8"/></svg>
+                  <svg class="wifi" viewBox="0 0 16 11.5"><path d="M8 2.3c2.4 0 4.6.9 6.3 2.5L15.6 3.5A10.3 10.3 0 0 0 8 .5 10.3 10.3 0 0 0 .4 3.5l1.3 1.3A8.9 8.9 0 0 1 8 2.3Z"/><path d="M8 5.6c1.5 0 2.9.6 4 1.5l1.3-1.3A7.4 7.4 0 0 0 8 3.8a7.4 7.4 0 0 0-5.3 2l1.3 1.3c1.1-.9 2.5-1.5 4-1.5Z"/><path d="M8 8.9c.7 0 1.3.3 1.8.7L8 11.5 6.2 9.6c.5-.4 1.1-.7 1.8-.7Z"/></svg>
+                  <svg class="bateria" viewBox="0 0 27 12.5"><rect x=".6" y=".6" width="22.8" height="11.3" rx="3.4" fill="none" stroke="#1a2e22" stroke-opacity=".38" stroke-width="1.1"/><rect x="2.4" y="2.4" width="19.2" height="7.7" rx="2"/><path d="M25 4.2v4.1c.9-.3 1.5-1.1 1.5-2S25.9 4.5 25 4.2Z" fill-opacity=".42"/></svg>
+                </span></div>
               <div class="pantallas">
-                <img class="scr" src="assets/p1-inicio.webp" alt="Inicio de Mi Cartera con el total de una cartera de ejemplo">
-                <img class="scr" src="assets/p2-cuentas.webp" alt="Cuentas con su rendimiento por tramos" loading="lazy">
-                <img class="scr" src="assets/p3-suscripciones.webp" alt="Suscripciones y las que la app detecta sola" loading="lazy">
-                <img class="scr" src="assets/p4-bolsa.webp" alt="Tablero de inversiones" loading="lazy">
-                <img class="scr" src="assets/p5-cierre.webp" alt="Resumen y cierre del mes" loading="lazy">
+                <img class="scr" src="assets/grandes/01.webp" alt="Inicio de Mi Cartera con el total de una cartera de ejemplo">
+                <img class="scr" src="assets/grandes/03.webp" alt="Cuentas con su rendimiento por tramos" loading="lazy">
+                <img class="scr" src="assets/grandes/06.webp" alt="Suscripciones y las que la app detecta sola" loading="lazy">
+                <img class="scr" src="assets/grandes/09.webp" alt="Tablero de inversiones" loading="lazy">
+                <img class="scr" src="assets/grandes/13.webp" alt="Resumen y cierre del mes" loading="lazy">
                 <div class="escaner" id="escaner" aria-hidden="true"></div>
               </div>
             </div>
             <div class="reflejo"></div>
           </div>
-        </div></div>
-        <div class="nota-ejemplo mono">capturas de una cartera de ejemplo</div>
+        </div>
+        <div class="nota-ejemplo mono">capturas de una cartera de ejemplo · <span class="solo-fino">clic</span><span class="solo-tactil">toca</span> para verla en grande</div>
       </div>
     </div>
     <div class="barra-caps" aria-hidden="true"><i id="barraCaps"></i></div>
@@ -473,7 +506,7 @@ main{position:relative;z-index:2}
       <span class="kicker mono">y todo lo demás</span>
       <h2 class="titulo-grande">todo lo que hace, <em>en una app</em>.</h2>
       <p>Movimientos, categorías, suscripciones, inversiones, el fondo, metas y deudas.
-        <span class="solo-fino">Pasa el mouse por una pantalla para ver qué es.</span><span class="solo-tactil">Toca una pantalla para ver qué es.</span></p>
+        <span class="solo-fino">Pasa el mouse para ver qué es cada pantalla, y haz clic para verla en grande.</span><span class="solo-tactil">Toca una pantalla para ver qué es; tócala otra vez para verla en grande.</span></p>
     </div>
     <div class="gal-cartas" id="cartas"></div>
   </section>
@@ -552,6 +585,11 @@ main{position:relative;z-index:2}
   <div class="pie-bajo mono"><span>© 2026</span><span>hecha en méxico</span></div>
 </footer>
 
+<div class="visor" id="visor" role="dialog" aria-modal="true" aria-label="Pantalla en grande" data-lenis-prevent hidden>
+  <button class="liquido vidrio visor-cerrar" id="visor-cerrar" type="button">cerrar ✕</button>
+  <figure class="visor-fig"><img id="visor-img" alt=""><figcaption class="mono" id="visor-txt"></figcaption></figure>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js"></script>
@@ -595,6 +633,45 @@ main{position:relative;z-index:2}
   });
   armar();
 
+  // ── el visor: cualquier pantalla en grande (funciona con o sin animación) ──
+  const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tactil = () => matchMedia('(hover: none)').matches;
+  let lenis = null, capActual = 0;                 // se llenan más abajo si hay movimiento
+  const visor = $('#visor'), vImg = $('#visor-img'), vTxt = $('#visor-txt'), vCerrar = $('#visor-cerrar');
+  let vOrigen = null;
+  // mientras el visor está abierto, lo de atrás no se puede enfocar ni tocar (teclado y lector de pantalla)
+  const fondo = [$('header'), $('main'), $('footer')];
+  const abrirVisor = (src, texto, origen) => {
+    vImg.src = src; vImg.alt = 'Pantalla de Mi Cartera: ' + texto; vTxt.textContent = texto;
+    vOrigen = origen || null;
+    visor.hidden = false; visor.scrollTop = 0;
+    fondo.forEach(el => { el.inert = true; });
+    html.classList.add('visor-abierto'); lenis && lenis.stop();
+    vCerrar.focus({ preventScroll: true });
+    if (window.gsap && !reducido) gsap.fromTo('.visor-fig', { opacity: 0, y: 24, scale: 0.97 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: 'expo.out', clearProps: 'all' });
+  };
+  const cerrarVisor = () => {
+    if (visor.hidden) return;
+    visor.hidden = true; vImg.removeAttribute('src');
+    fondo.forEach(el => { el.inert = false; });
+    html.classList.remove('visor-abierto'); lenis && lenis.start();
+    vOrigen && vOrigen.focus({ preventScroll: true });
+  };
+  vCerrar.addEventListener('click', e => { e.stopPropagation(); cerrarVisor(); });
+  // tocar fuera de la pantalla (y de su nombre) cierra
+  visor.addEventListener('click', e => { if (!e.target.closest('.visor-fig')) cerrarVisor(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape') cerrarVisor(); });
+
+  // el teléfono: tocarlo abre en grande la pantalla del capítulo que se está viendo
+  const tel = $('#telefono');
+  const abrirTel = () => {
+    const img = $$('.scr')[capActual];
+    abrirVisor(img.currentSrc || img.src, $$('.cap h2')[capActual].textContent, tel);
+  };
+  tel.addEventListener('click', abrirTel);
+  tel.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrirTel(); } });
+
   // ── las 18 pantallas de la galería (se crean siempre; sin animación quedan en rejilla) ──
   const PANTALLAS = ['todo tu dinero', 'dónde está', 'cuentas y tarjetas', 'movimientos', 'seis meses de historia',
     'suscripciones', 'las que encuentra sola', 'categorías', 'tu bolsa', 'lo que gana y lo que pierde',
@@ -603,19 +680,27 @@ main{position:relative;z-index:2}
   const capaCartas = $('#cartas');
   const cartas = PANTALLAS.map((nombre, i) => {
     const el = document.createElement('div');
-    el.className = 'carta';
-    el.setAttribute('role', 'img');
-    el.setAttribute('aria-label', 'Pantalla de Mi Cartera: ' + nombre);
+    el.className = 'carta'; el.tabIndex = 0;
+    el.setAttribute('role', 'button');
+    el.setAttribute('aria-label', 'Ver en grande: ' + nombre);
     el.innerHTML = `<div class="carta-in"><div class="cara frente"><img src="assets/tarjetas/${pad(i + 1)}.webp" alt="" loading="lazy"></div>` +
-                   `<div class="cara reverso"><span class="mono">${pad(i + 1)}</span><b>${nombre}</b></div></div>`;
-    // con el dedo no hay "pasar por encima": un toque la voltea y otro la regresa
-    el.addEventListener('click', () => { if (matchMedia('(hover: none)').matches) el.classList.toggle('volteada'); });
+                   `<div class="cara reverso"><span class="mono">${pad(i + 1)}</span><b>${nombre}</b>` +
+                   `<small>${tactil() ? 'tócala otra vez para verla en grande' : 'clic para verla en grande'}</small></div></div>`;
+    const abrir = () => abrirVisor(`assets/grandes/${pad(i + 1)}.webp`, nombre, el);
+    // Con mouse, pasar encima la voltea y el clic la abre. Con el dedo no hay
+    // "pasar encima": el primer toque la voltea (y regresa las demás), el segundo la abre.
+    el.addEventListener('click', () => {
+      if (!tactil()) { abrir(); return; }
+      if (el.classList.contains('volteada')) { el.classList.remove('volteada'); abrir(); return; }
+      cartas.forEach(c => c.el.classList.remove('volteada'));
+      el.classList.add('volteada');
+    });
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(); } });
     capaCartas.appendChild(el);
-    return { el, x: 0, y: 0, r: 0, s: 0.6, o: 0, vx: 0, vy: 0, vr: 0, vs: 0, vo: 0 };
+    return { el, x: 0, y: 0, r: 0, s: 0.4, o: 0, vx: 0, vy: 0, vr: 0, vs: 0, vo: 0 };
   });
 
   // Sin GSAP (CDN caído) o con movimiento reducido: la página queda estática y completa.
-  const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!window.gsap || !window.ScrollTrigger || reducido) {
     html.classList.remove('va-mov');
     const intro = $('.intro'); intro && intro.remove();
@@ -626,7 +711,6 @@ main{position:relative;z-index:2}
   ScrollTrigger.config({ ignoreMobileResize: true });
 
   // ── scroll suave ──────────────────────────────────────────────────────
-  let lenis = null;
   if (window.Lenis) {
     lenis = new Lenis({ lerp: 0.085, anchors: true });
     lenis.on('scroll', ScrollTrigger.update);
@@ -784,36 +868,6 @@ main{position:relative;z-index:2}
   medir();
   new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; }).observe($('.hero'));
 
-  // ── la lente de vidrio (solo con mouse y donde hay refracción) ─────────
-  const lente = $('#lente');
-  const conLente = refracta && fino;
-  const gota = { x: innerWidth * 0.68, y: innerHeight * 0.42, vx: 0, vy: 0, tx: innerWidth * 0.68, ty: innerHeight * 0.42, libre: true, visible: 1, escala: 0 };
-  if (conLente) {
-    html.classList.add('con-lente');
-    hacerVidrio(lente, { bisel: 34, fuerza: 46, aumento: 0.2 });
-    addEventListener('pointermove', e => { gota.tx = e.clientX; gota.ty = e.clientY; gota.libre = false; }, { passive: true });
-    document.addEventListener('pointerleave', () => { gota.libre = true; });
-  }
-  function pintarLente(ahora, dt) {
-    if (!conLente || !heroVisible) return;
-    if (gota.libre) {                               // sin mouse, flota sola
-      gota.tx = innerWidth * (0.66 + 0.06 * Math.sin(ahora / 2300));
-      gota.ty = innerHeight * (0.42 + 0.07 * Math.sin(ahora / 1700 + 1));
-    }
-    // resorte: la gota llega con un poco de inercia, como líquido
-    const k = 60, c = 13;
-    gota.vx += ((gota.tx - gota.x) * k - gota.vx * c) * dt;
-    gota.vy += ((gota.ty - gota.y) * k - gota.vy * c) * dt;
-    gota.x += gota.vx * dt; gota.y += gota.vy * dt;
-    const vel = Math.hypot(gota.vx, gota.vy), estira = Math.min(0.22, vel / 4200);
-    const angulo = Math.atan2(gota.vy, gota.vx) * 180 / Math.PI;
-    // Se esconde encogiéndose, nunca con opacidad: con opacidad menor a 1 el
-    // navegador aísla al vidrio y deja de ver lo que tiene detrás.
-    const e = gota.escala * gota.visible;
-    lente.style.transform = `translate3d(${gota.x}px,${gota.y}px,0) rotate(${angulo}deg) scale(${(1 + estira) * e},${(1 - estira * 0.8) * e}) rotate(${-angulo}deg)`;
-    lente.style.visibility = e < 0.01 ? 'hidden' : '';
-  }
-
   // ── la galería de 18 pantallas: dispersas → en fila → círculo → arco ──
   // Mismo comportamiento que el componente de referencia, hecho con resortes
   // propios: cada propiedad de cada tarjeta persigue su destino con rigidez 40
@@ -831,29 +885,34 @@ main{position:relative;z-index:2}
   };
   function destinos() {
     const Wg = innerWidth, Hg = innerHeight, movil = Wg < 768;
+    const cw = movil ? 120 : 150;                  // el ancho de la tarjeta en el CSS (su tamaño en el arco)
     const out = [];
     for (let i = 0; i < N; i++) {
       if (gal.fase === 'dormida' || gal.fase === 'dispersa') { out.push(dispersas[i]); continue; }
       if (gal.fase === 'linea') {
-        const paso = 82, esc = Math.min(1, (Wg - 32) / (N * paso));
+        const paso = cw + 10, esc = Math.min(1, (Wg - 32) / (N * paso));
         out.push({ x: (i * paso - (N - 1) * paso / 2) * esc, y: 0, r: 0, s: esc, o: 1 });
         continue;
       }
       const minD = Math.min(Wg, Hg);
       const radioC = Math.min(minD * 0.35, 350), angC = i / N * Math.PI * 2;
-      // en el círculo las tarjetas se achican si no caben (en el teléfono no caben)
-      const escC = Math.min(1, (2 * Math.PI * radioC / N) / 80);
+      // en el círculo se achican a lo que cabe (en el arco van a su tamaño completo)
+      const escC = Math.min(1, (2 * Math.PI * radioC / N) / (cw + 8));
       const circ = { x: Math.cos(angC) * radioC, y: Math.sin(angC) * radioC, r: angC * 180 / Math.PI + 90, s: escC };
-      const radioA = Math.min(Wg, Hg * 1.5) * (movil ? 1.4 : 1.1);
+      // En el teléfono el arco es más abierto (radio grande) para que quepan
+      // tarjetas grandes sin encimarse; se ven de a tres y el scroll las pasa.
+      const radioA = movil ? Math.max(Wg * 2.5, 950) : Math.min(Wg, Hg * 1.5) * 1.1;
       const cima = Hg * (movil ? 0.2 : 0.25), centroA = cima + radioA;
       const abre = 130, inicio = -90 - abre / 2, paso = abre / (N - 1);
-      // Cuánto del arco cabe en pantalla, y el recorrido justo para que la
-      // primera tarjeta y la última lleguen al centro (ni más ni menos).
-      const cabe = Math.acos(Math.max(-1, 1 - (Hg / 2 - cima + 40) / radioA)) * 180 / Math.PI;
+      // Cuánto del arco cabe en pantalla (a lo alto y a lo ancho), y el recorrido
+      // justo para que la primera tarjeta y la última lleguen al centro.
+      const cabeAlto = Math.acos(Math.max(-1, 1 - (Hg / 2 - cima + 40) / radioA));
+      const cabeAncho = Math.asin(Math.min(1, (Wg / 2 + 20) / radioA));
+      const cabe = Math.min(cabeAlto, cabeAncho) * 180 / Math.PI;
       const recorrido = Math.max(0, abre / 2 - cabe * 0.75);
       const angA = inicio + i * paso + (0.5 - gal.pm) * 2 * recorrido;
       const rad = angA * Math.PI / 180;
-      const arco = { x: Math.cos(rad) * radioA + gal.mx, y: Math.sin(rad) * radioA + centroA, r: angA + 90, s: movil ? 1.05 : 1.6 };
+      const arco = { x: Math.cos(rad) * radioA + gal.mx, y: Math.sin(rad) * radioA + centroA, r: angA + 90, s: 1 };
       const m = gal.morph;
       out.push({ x: lerp(circ.x, arco.x, m), y: lerp(circ.y, arco.y, m), r: lerp(circ.r, arco.r, m), s: lerp(circ.s, arco.s, m), o: 1 });
     }
@@ -865,14 +924,21 @@ main{position:relative;z-index:2}
     // el avance del scroll también llega con resorte (como el morph del original)
     const metaMorph = gal.fase === 'circulo' ? Math.min(1, gal.p / 0.25) : 0;
     const metaGiro = Math.max(0, Math.min(1, (gal.p - 0.25) / 0.75));
-    gal.morph += (metaMorph - gal.morph) * Math.min(1, dt * 3.2);
-    gal.pm += (metaGiro - gal.pm) * Math.min(1, dt * 3.2);
+    const suave = 1 - Math.exp(-dt * 3.2);        // igual de rápido a 60 que a 20 cuadros por segundo
+    gal.morph += (metaMorph - gal.morph) * suave;
+    gal.pm += (metaGiro - gal.pm) * suave;
     const ds = destinos();
+    // Los resortes avanzan en pasos de 1/60 s: en un teléfono que da pocos
+    // cuadros por segundo llegan a tiempo en vez de ir en cámara lenta.
+    const pasos = Math.max(1, Math.ceil(dt * 60)), h = dt / pasos;
     cartas.forEach((c, i) => {
       const d = ds[i];
-      resorte(c, 'x', d.x, dt); resorte(c, 'y', d.y, dt); resorte(c, 'r', d.r, dt); resorte(c, 's', d.s, dt); resorte(c, 'o', d.o, dt);
+      for (let k = 0; k < pasos; k++) {
+        resorte(c, 'x', d.x, h); resorte(c, 'y', d.y, h); resorte(c, 'r', d.r, h); resorte(c, 's', d.s, h); resorte(c, 'o', d.o, h);
+      }
       c.el.style.transform = `translate3d(${c.x}px,${c.y}px,0) rotate(${c.r}deg) scale(${c.s})`;
-      c.el.style.opacity = Math.max(0, Math.min(1, c.o));
+      // casi 1 = 1: una opacidad de 0.9999 hace que Safari aplane el giro de la tarjeta
+      c.el.style.opacity = c.o > 0.995 ? '1' : Math.max(0, c.o);
     });
     const enCirculo = gal.fase === 'circulo';
     galIntro.style.opacity = enCirculo ? Math.max(0, 1 - gal.morph * 2) : 0;
@@ -887,7 +953,11 @@ main{position:relative;z-index:2}
     relojes.push(setTimeout(() => { if (gal.fase === 'dispersa') gal.fase = 'linea'; }, 450));
     relojes.push(setTimeout(() => { gal.fase = 'circulo'; }, 2200));
   };
-  new IntersectionObserver(([e]) => { gal.visible = e.isIntersecting; if (e.isIntersecting) despertar(); }, { threshold: 0.2 }).observe($('.galeria'));
+  new IntersectionObserver(([e]) => {
+    gal.visible = e.isIntersecting;
+    if (e.isIntersecting) despertar();
+    else cartas.forEach(c => c.el.classList.remove('volteada'));   // al regresar, todas de frente
+  }, { threshold: 0.2 }).observe($('.galeria'));
   // (su ScrollTrigger se crea más abajo, después de los de arriba: los pines se
   // calculan en el orden de la página)
   gal.mxMeta = 0;
@@ -895,9 +965,9 @@ main{position:relative;z-index:2}
 
   // un solo reloj para todo lo que se mueve cuadro por cuadro
   gsap.ticker.add(() => {
-    const ahora = performance.now(), dt = Math.min(1 / 30, (ahora - ultimo) / 1000); ultimo = ahora;
+    // tope de 0.25 s: si la pestaña estuvo escondida, no brinca de golpe
+    const ahora = performance.now(), dt = Math.min(0.25, (ahora - ultimo) / 1000); ultimo = ahora;
     pintarOrbita(ahora, dt);
-    pintarLente(ahora, dt);
     gal.mx += (gal.mxMeta - gal.mx) * Math.min(1, dt * 2);
     pintarGaleria(ahora, dt);
   });
@@ -913,7 +983,6 @@ main{position:relative;z-index:2}
     .from('.hero-titulo .linea > span', { yPercent: 115, duration: 1.2, stagger: 0.09 }, 1.4)
     .from('.hero-sub > span', { opacity: 0, y: 18, filter: 'blur(8px)', duration: 1 }, 1.65)
     .from('.nav, .hero-meta, .vertical, .desliza', { opacity: 0, duration: 1, clearProps: 'opacity' }, 1.7)
-    .to(gota, { escala: 1, duration: 1.4, ease: 'elastic.out(1,.6)' }, 1.9)
     .to(orb, { aparece: 1, duration: 1.8, ease: 'power2.out' }, 1.25);
 
   // ── hero con scroll: el título se va, las cuentas colapsan, nace el número ──
@@ -925,7 +994,6 @@ main{position:relative;z-index:2}
   gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: '+=160%', scrub: 1, pin: true } })
     .to('.hero-centro', { y: -60, opacity: 0, filter: 'blur(12px)', duration: 0.3, ease: 'power1.in' }, 0)
     .to('.hero-capa', { opacity: 0, duration: 0.2 }, 0)
-    .to(gota, { visible: 0, duration: 0.18 }, 0)
     .to(orb, { r: 0, duration: 0.52, ease: 'power2.in' }, 0.04)
     .to(orb, { rayos: 1, duration: 0.2, ease: 'none' }, 0.14)
     .to(orb, { rayos: 0, duration: 0.14, ease: 'none' }, 0.42)
@@ -949,8 +1017,7 @@ main{position:relative;z-index:2}
   gsap.set(caps.slice(1), { opacity: 0 });
   gsap.set(scrs.slice(1), { opacity: 0 });
   gsap.set(esc, { opacity: 0 });
-  let capActual = 0;
-  // El contador lee el tiempo de la línea (no el scroll): con scrub la línea va
+  // El contador (y el visor, que abre la pantalla del capítulo actual) lee el tiempo de la línea (no el scroll): con scrub la línea va
   // detrás del scroll, y si se lee el scroll el número cambia antes que el texto.
   const tlCaps = gsap.timeline({
     scrollTrigger: { trigger: '.dentro', start: 'top top', end: () => '+=' + innerHeight * 4.4, scrub: 1, pin: true, invalidateOnRefresh: true },
@@ -959,11 +1026,12 @@ main{position:relative;z-index:2}
       const i = Math.max(0, Math.min(4, Math.floor(tlCaps.time() - 0.2)));
       if (i !== capActual) { capActual = i; capN.textContent = pad(i + 1); }
     } });
-  tlCaps.fromTo('#telefono', { rotateY: -14, rotateX: 5 }, { rotateY: 11, rotateX: -3, duration: 5, ease: 'none' }, 0);
+  // El teléfono ya no gira durante los capítulos: plano se lee nítido.
+  tlCaps.to({}, { duration: 5 }, 0);
   for (let i = 1; i < 5; i++) {
     tlCaps
-      .to(caps[i - 1], { opacity: 0, y: -30, filter: 'blur(8px)', duration: 0.3, ease: 'power2.in' }, i)
-      .fromTo(caps[i], { opacity: 0, y: 34, filter: 'blur(8px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.42, ease: 'power2.out' }, i + 0.3)
+      .to(caps[i - 1], { opacity: 0, y: -24, filter: 'blur(4px)', duration: 0.26, ease: 'power2.in' }, i)
+      .fromTo(caps[i], { opacity: 0, y: 28, filter: 'blur(4px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.36, ease: 'power2.out' }, i + 0.26)
       .to(scrs[i - 1], { opacity: 0, scale: 0.97, duration: 0.4, ease: 'power2.in' }, i)
       .fromTo(scrs[i], { opacity: 0, yPercent: 7, scale: 1.03 }, { opacity: 1, yPercent: 0, scale: 1, duration: 0.5, ease: 'power3.out' }, i + 0.12)
       .fromTo(esc, { top: '-6%', opacity: 1 }, { top: '104%', opacity: 0.2, duration: 0.55, ease: 'power1.inOut', immediateRender: false }, i + 0.08)
@@ -977,18 +1045,12 @@ main{position:relative;z-index:2}
       if (self.progress > 0.02 && gal.fase !== 'circulo') { despertar(); relojes.forEach(clearTimeout); gal.fase = 'circulo'; }
     } });
 
-  // inclinación del teléfono y luz que sigue al mouse (solo en computadora)
+  // luz tenue que sigue al mouse (solo en computadora)
   if (fino) {
-    const rx = gsap.quickTo('.t-tilt', 'rotationX', { duration: 0.8, ease: 'power3' });
-    const ry = gsap.quickTo('.t-tilt', 'rotationY', { duration: 0.8, ease: 'power3' });
     const lx = gsap.quickTo('.luz-cursor', 'x', { duration: 0.9, ease: 'power3' });
     const ly = gsap.quickTo('.luz-cursor', 'y', { duration: 0.9, ease: 'power3' });
     const luz = $('.luz-cursor');
-    addEventListener('pointermove', e => {
-      const nx = e.clientX / innerWidth - 0.5, ny = e.clientY / innerHeight - 0.5;
-      ry(nx * 10); rx(-ny * 8); lx(e.clientX); ly(e.clientY);
-      luz.style.opacity = 1;
-    }, { passive: true });
+    addEventListener('pointermove', e => { lx(e.clientX); ly(e.clientY); luz.style.opacity = 1; }, { passive: true });
   }
 
   // ── la frase se enciende palabra por palabra ──────────────────────────
