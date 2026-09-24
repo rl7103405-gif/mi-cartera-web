@@ -220,7 +220,8 @@ main{position:relative;z-index:2}
 .fijo .dentro{height:100vh;height:100svh;min-height:520px;padding:0;overflow:hidden}
 .fijo .dentro-kicker{position:absolute;top:92px;left:var(--lado);right:var(--lado);margin:0;z-index:3}
 .fijo .nota-caps,.fijo .mini-tel{display:none}
-.fijo .cap-tabs{display:flex}
+.fijo .cap-tabs{display:flex;position:absolute;left:calc(var(--lado) - 13px);bottom:58px;z-index:3;justify-content:flex-start;gap:0;
+  max-width:calc(50vw - var(--lado))}
 .fijo .dentro-grid{display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center;height:100%;padding:0 var(--lado)}
 .fijo .capitulos{gap:0;align-items:center}
 .fijo .cap{grid-area:1/1;display:block}
@@ -228,11 +229,11 @@ main{position:relative;z-index:2}
 /* El marco del teléfono es una losa de vidrio. Alto Y ancho explícitos: con
    aspect-ratio + max-width:100% Safari lo aplastaba a una rayita. Sin
    will-change ni giro 3D en reposo, que dejaban la pantalla borrosa. */
-.telefono{--alto:min(72vh,690px);position:relative;height:var(--alto);width:calc(var(--alto) * 390 / 870);max-width:calc(100vw - 32px);
+.telefono{--alto:min(68vh,690px);position:relative;height:var(--alto);width:calc(var(--alto) * 390 / 870);max-width:calc(100vw - 32px);
   border-radius:50px;padding:11px;cursor:zoom-in;
   background:linear-gradient(145deg,rgba(232,235,227,.2),rgba(232,235,227,.05) 38%,rgba(167,216,184,.07) 70%,rgba(232,235,227,.16));
   box-shadow:var(--borde-vidrio),0 50px 120px -30px rgba(0,0,0,.85),0 0 110px -20px rgba(47,111,79,.55)}
-@supports (height:1svh){ .telefono{--alto:min(72svh,690px)} }
+@supports (height:1svh){ .telefono{--alto:min(68svh,690px)} }
 .pantalla{position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;background:#ecf2ea;display:flex;flex-direction:column;
   box-shadow:0 0 0 1px rgba(0,0,0,.35)}
 /* Barra de estado de iPhone con sus proporciones reales, medidas contra el alto
@@ -473,14 +474,7 @@ main{position:relative;z-index:2}
 
   <!-- 2 · por dentro -->
   <section class="dentro" id="dentro">
-    <div class="dentro-kicker mono"><span>cómo se ve por dentro</span>
-      <nav class="cap-tabs" aria-label="Capítulos">
-        <button class="cap-tab" type="button" data-cap="0" aria-current="true">inicio</button>
-        <button class="cap-tab" type="button" data-cap="1">rendimientos</button>
-        <button class="cap-tab" type="button" data-cap="2">suscripciones</button>
-        <button class="cap-tab" type="button" data-cap="3">inversiones</button>
-        <button class="cap-tab" type="button" data-cap="4">resumen</button>
-      </nav></div>
+    <div class="dentro-kicker mono"><span>cómo se ve por dentro</span></div>
     <p class="nota-caps mono">capturas de una cartera de ejemplo · <span class="solo-fino">haz clic en una pantalla</span><span class="solo-tactil">toca una pantalla</span> para verla en grande</p>
     <div class="dentro-grid">
       <div class="capitulos">
@@ -550,6 +544,14 @@ main{position:relative;z-index:2}
         <div class="nota-ejemplo mono">capturas de una cartera de ejemplo · <span class="solo-fino">clic</span><span class="solo-tactil">toca</span> para verla en grande</div>
       </div>
     </div>
+    <!-- las pestañas van abajo, junto a la barra de avance: arriba se veían como un segundo menú encima del teléfono -->
+    <nav class="cap-tabs" aria-label="Capítulos">
+      <button class="cap-tab" type="button" data-cap="0" aria-current="true">inicio</button>
+      <button class="cap-tab" type="button" data-cap="1">rendimientos</button>
+      <button class="cap-tab" type="button" data-cap="2">suscripciones</button>
+      <button class="cap-tab" type="button" data-cap="3">inversiones</button>
+      <button class="cap-tab" type="button" data-cap="4">resumen</button>
+    </nav>
     <div class="barra-caps" aria-hidden="true"><i id="barraCaps"></i></div>
   </section>
 
