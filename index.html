@@ -21,7 +21,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230c100d'/%3E%3Cellipse cx='32' cy='32' rx='22' ry='9' fill='none' stroke='%23a7d8b8' stroke-width='2' transform='rotate(-12 32 32)'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23e8ebe3'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Onest:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ── tokens ──────────────────────────────────────────────────────────────
    Diseño de un solo mundo (oscuro a propósito): carbón verde cálido, hueso
@@ -30,9 +30,12 @@
   color-scheme:dark;
   --noche:#0c100d; --hueso:#e8ebe3; --gris:#9aa39c; --gris-2:#8a948c;
   --linea:rgba(232,235,227,.12); --acento:#a7d8b8; --verde:#2f6f4f;
-  --display:'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Títulos en Sora (geométrica, un poco futurista) y texto en Onest: sin la cursiva
+     con serifa, que es justo lo que hacía que se viera "hecha por IA". Sora y no
+     Bricolage: el motor de Safari de prueba pinta Bricolage siempre gruesa. */
+  --display:'Sora', 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --texto:'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono:'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-  --serif:'Instrument Serif', Georgia, 'Times New Roman', serif;
   --lado:clamp(16px, 5vw, 96px);
   --suave:cubic-bezier(.7,0,.2,1);
   /* el borde del vidrio: luz arriba-izquierda, reflejo fuerte abajo-derecha */
@@ -55,11 +58,12 @@ html.lenis, html.lenis body{height:auto}
 html{background:var(--noche);color:var(--hueso);-webkit-text-size-adjust:100%;scrollbar-gutter:stable}
 /* con el visor abierto, la página de atrás no se mueve (el gutter evita el brinco del ancho) */
 html.visor-abierto{overflow:hidden}
-body{font-family:var(--display);font-weight:400;background:var(--noche);color:var(--hueso);overflow-x:hidden;
+body{font-family:var(--texto);font-weight:400;background:var(--noche);color:var(--hueso);overflow-x:hidden;
      -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 a{color:inherit;text-decoration:none}
 img{display:block;max-width:100%}
-em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--acento);letter-spacing:-.005em}
+em{font-style:normal;font-weight:500;color:var(--acento)}
+.hero-titulo,.titulo-grande,.cap h2,.frase,.gal-grande,.numero,.pie-gigante,.marca,.fila h3,.garantia h3,.paso h3,.plan-precio,.menu-panel a{font-family:var(--display)}
 h1,h2,h3{text-wrap:balance}
 .mono{font-family:var(--mono);font-size:11px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:var(--gris)}
 ::selection{background:var(--acento);color:var(--noche)}
@@ -143,7 +147,20 @@ main{position:relative;z-index:2}
 .nav-links{display:flex;gap:24px}
 .nav-links a{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gris);transition:color .3s;white-space:nowrap}
 .nav-links a:hover{color:var(--hueso)}
-@media (max-width:820px){ .nav-links{display:none} .nav{gap:18px} }
+.menu-btn{display:none}
+@media (max-width:820px){
+  .nav-links{display:none} .nav{gap:10px}
+  .menu-btn{display:inline-flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:40px;height:40px;
+    -webkit-appearance:none;appearance:none;border:0;background:transparent;cursor:pointer;border-radius:999px}
+  .menu-btn span{display:block;width:18px;height:1.5px;background:var(--hueso);border-radius:2px;transition:transform .35s var(--suave)}
+  .menu-btn[aria-expanded="true"] span:first-child{transform:translateY(3.25px) rotate(45deg)}
+  .menu-btn[aria-expanded="true"] span:last-child{transform:translateY(-3.25px) rotate(-45deg)} }
+.menu-panel{position:fixed;left:16px;right:16px;top:calc(76px + env(safe-area-inset-top, 0px));z-index:49;border-radius:26px;padding:10px 8px;
+  display:flex;flex-direction:column;--desenfoque:18px;--tinte:rgba(12,16,13,.96)}
+.menu-panel a{display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:0 16px;border-radius:16px;font-size:21px;
+  letter-spacing:-.02em;color:var(--hueso)}
+.menu-panel a::after{content:"→";color:var(--gris);font-size:16px}
+.menu-panel a:active{background:rgba(232,235,227,.06)}
 .progreso{position:fixed;top:0;left:0;right:0;height:1px;z-index:60;pointer-events:none}
 .progreso i{display:block;height:100%;background:var(--acento);transform-origin:0 50%;transform:scaleX(0)}
 
@@ -159,12 +176,22 @@ main{position:relative;z-index:2}
 .chip i{width:6px;height:6px;border-radius:50%;background:var(--acento);box-shadow:0 0 10px rgba(167,216,184,.8)}
 @media (max-width:760px){ .chip{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(20,27,22,.92);font-size:11px} }
 .hero-centro{position:relative;z-index:3;text-align:center;padding:0 16px;pointer-events:none}
-.hero-titulo{font-weight:300;font-size:clamp(46px,8vw,118px);line-height:.98;letter-spacing:-.05em}
+.hero-titulo{font-weight:300;font-size:clamp(40px,min(8vw,10.5vh),118px);line-height:.98;letter-spacing:-.05em}
 .hero-titulo .linea{display:block;overflow:hidden;padding:0 .04em .1em}
 .hero-titulo .linea>span{display:inline-block}
-.hero-titulo em{font-size:1.1em}
+.hero-titulo em{font-weight:500}
 .hero-sub{margin:26px auto 0;max-width:440px;font-size:clamp(15px,1.2vw,18px);line-height:1.55;color:var(--gris)}
 .hero-sub>span{display:inline-block}
+.hero-eyebrow>span{display:inline-block}
+.hero-eyebrow{display:inline-block;margin-bottom:22px;padding:7px 14px;border-radius:999px;font-size:13px;color:var(--hueso);
+  background:rgba(232,235,227,.06);box-shadow:var(--borde-vidrio-suave)}
+.hero-sub{max-width:520px}
+.hero-ctas{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;margin-top:30px;pointer-events:auto}
+.boton-texto{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 10px;font-size:15px;color:var(--hueso);
+  text-decoration:underline;text-decoration-color:rgba(232,235,227,.35);text-underline-offset:5px;transition:text-decoration-color .3s}
+.boton-texto:hover{text-decoration-color:var(--acento)}
+.hero-precio{margin-top:16px;font-size:13.5px;color:var(--gris)}
+.liquido.medio{height:48px;padding:0 24px;font-size:15px;--tinte:rgba(167,216,184,.2)}
 .hero-capa{position:absolute;inset:0;z-index:6;pointer-events:none}
 .vertical{position:absolute;left:var(--lado);bottom:48px;writing-mode:vertical-rl;transform:rotate(180deg)}
 .destello{position:absolute;left:50%;top:50%;width:80vmin;height:80vmin;margin:-40vmin 0 0 -40vmin;border-radius:50%;
@@ -357,6 +384,49 @@ main{position:relative;z-index:2}
 .kicker{display:block;margin-bottom:30px}
 .titulo-grande{font-weight:300;font-size:clamp(36px,5.4vw,86px);line-height:1.02;letter-spacing:-.05em;max-width:16ch}
 
+/* cómo funciona: tres pasos de verdad (aquí el número sí es una secuencia) */
+.pasos{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:clamp(48px,6vw,80px);border-top:1px solid var(--linea)}
+.paso{padding:30px 30px 0 0}
+.paso+.paso{padding-left:30px;border-left:1px solid var(--linea)}
+.paso .n{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;font-family:var(--mono);font-size:13px;color:var(--noche);background:var(--acento)}
+.paso h3{margin-top:18px;font-weight:500;font-size:clamp(21px,1.9vw,27px);letter-spacing:-.025em;line-height:1.15}
+.paso p{margin-top:10px;color:var(--gris);font-size:15.5px;line-height:1.6;max-width:360px}
+@media (max-width:760px){
+  .pasos{grid-template-columns:1fr}
+  .paso,.paso+.paso{padding:26px 0;border-left:0}
+  .paso+.paso{border-top:1px solid var(--linea)} }
+
+/* precio: un solo plan, mensual o anual */
+.precio-grid{display:grid;grid-template-columns:1fr minmax(0,470px);gap:clamp(40px,6vw,110px);align-items:start}
+.precio-txt p{margin-top:24px;color:var(--gris);font-size:clamp(16px,1.3vw,19px);max-width:420px;line-height:1.6}
+.plan{position:relative;border-radius:32px;padding:clamp(24px,3vw,36px);--desenfoque:16px;--tinte:rgba(20,28,22,.3)}
+.plan-toggle{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(232,235,227,.05);box-shadow:inset 0 0 0 1px var(--linea);width:max-content;max-width:100%}
+.plan-toggle button{-webkit-appearance:none;appearance:none;border:0;background:transparent;font:inherit;font-size:14.5px;color:var(--gris);
+  height:42px;padding:0 18px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:color .3s,background .3s,box-shadow .3s}
+.plan-toggle button[aria-pressed="true"]{color:var(--hueso);background:rgba(167,216,184,.16);box-shadow:var(--borde-vidrio-suave)}
+.plan-toggle .ahorro{font-size:12px;padding:3px 8px;border-radius:999px;color:var(--noche);background:var(--acento);font-weight:600}
+.plan-precio{display:flex;align-items:baseline;gap:6px;margin-top:26px;font-weight:300;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.plan-precio .signo{font-size:clamp(28px,3vw,40px);color:var(--gris)}
+.plan-precio #p-monto{font-size:clamp(58px,6.4vw,92px);line-height:1}
+.plan-precio .per{font-family:var(--texto);font-size:16px;letter-spacing:0;color:var(--gris);margin-left:4px}
+.plan-nota{margin-top:10px;color:var(--acento);font-size:15px;min-height:1.5em}
+.plan-lista{list-style:none;margin:26px 0 28px;display:grid;gap:12px}
+.plan-lista li{position:relative;padding-left:28px;font-size:15.5px;line-height:1.45;color:var(--hueso)}
+.plan-lista li::before{content:"";position:absolute;left:2px;top:.42em;width:12px;height:7px;border-left:2px solid var(--acento);border-bottom:2px solid var(--acento);transform:rotate(-45deg)}
+.plan .liquido.grande{width:100%}
+.plan-pie{margin-top:14px;font-size:12.5px;color:var(--gris-2);text-align:center}
+@media (max-width:900px){ .precio-grid{grid-template-columns:1fr} }
+
+/* preguntas: <details> de siempre, que funciona con dedo, teclado y lector de pantalla */
+.preguntas{margin-top:clamp(40px,5vw,64px);border-top:1px solid var(--linea);max-width:860px}
+.preguntas details{border-bottom:1px solid var(--linea)}
+.preguntas summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:20px;min-height:64px;padding:16px 0;
+  font-family:var(--display);font-size:clamp(19px,1.7vw,24px);letter-spacing:-.02em}
+.preguntas summary::-webkit-details-marker{display:none}
+.preguntas summary::after{content:"+";flex:none;font-family:var(--texto);font-size:24px;color:var(--acento);transition:transform .35s var(--suave)}
+.preguntas details[open] summary::after{transform:rotate(45deg)}
+.preguntas details p{padding:0 0 22px;color:var(--gris);font-size:16px;line-height:1.65;max-width:680px}
+
 /* 4 · lo que la hace distinta */
 .filas{margin-top:clamp(64px,7vw,104px);border-top:1px solid var(--linea)}
 .fila{position:relative;display:grid;grid-template-columns:110px 1fr 1.25fr;gap:28px;padding:38px 0;border-bottom:1px solid var(--linea);align-items:baseline}
@@ -419,7 +489,7 @@ main{position:relative;z-index:2}
 .pie-links a{display:inline-block;padding:14px 0}   /* blanco de dedo de 44 px */
 .pie-gigante{font-weight:300;font-size:18.6vw;letter-spacing:-.075em;line-height:.8;white-space:nowrap;margin:64px 0 0 -.04em;
   background:linear-gradient(180deg,rgba(232,235,227,.9),rgba(232,235,227,.06) 88%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.pie-gigante span{font-family:var(--serif);font-style:italic;letter-spacing:-.03em}
+.pie-gigante span{font-weight:500}
 .pie-bajo{display:flex;justify-content:space-between;margin-top:18px}
 </style>
 </head>
@@ -434,12 +504,22 @@ main{position:relative;z-index:2}
 <header class="nav vidrio" id="nav">
   <a class="marca" href="#top">mi <span>cartera</span></a>
   <nav class="nav-links" aria-label="Secciones">
+    <a href="#como">cómo funciona</a>
     <a href="#dentro">cómo se ve</a>
-    <a href="#todo">todo lo que hace</a>
-    <a href="#confianza">tu banco</a>
+    <a href="#precio">precio</a>
+    <a href="#preguntas">preguntas</a>
   </nav>
   <a class="liquido vidrio" href="#lugar">quiero una</a>
+  <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu-panel" aria-label="Abrir el menú"><span></span><span></span></button>
 </header>
+<nav class="menu-panel vidrio" id="menu-panel" aria-label="Menú" hidden>
+  <a href="#como">cómo funciona</a>
+  <a href="#dentro">cómo se ve</a>
+  <a href="#todo">todo lo que hace</a>
+  <a href="#precio">precio</a>
+  <a href="#preguntas">preguntas</a>
+  <a href="#lugar">quiero una</a>
+</nav>
 
 <main>
 
@@ -461,11 +541,17 @@ main{position:relative;z-index:2}
     <div class="destello" aria-hidden="true"></div>
 
     <div class="hero-centro">
+      <p class="hero-eyebrow"><span>una app para llevar tus finanzas personales</span></p>
       <h1 class="hero-titulo">
         <span class="linea"><span>todo tu dinero,</span></span>
         <span class="linea"><span>en un <em>número</em>.</span></span>
       </h1>
-      <p class="hero-sub"><span>Nu, Revolut, tus cajitas, tu bolsa, tu efectivo. Mi Cartera los junta en una pantalla y te dice cuánto llevas ganado, sin conectarse a tu banco.</span></p>
+      <p class="hero-sub"><span>Anotas lo que tienes en Nu, Revolut, tus cajitas, tu bolsa y tu efectivo, y Mi Cartera te dice cuánto tienes en total y cuánto llevas ganado. Sin conectarse a tu banco.</span></p>
+      <div class="hero-ctas">
+        <a class="liquido vidrio medio" href="#lugar">quiero una</a>
+        <a class="boton-texto" href="#como">cómo funciona ↓</a>
+      </div>
+      <p class="hero-precio">$150 al mes · te la dejamos lista</p>
     </div>
 
     <div class="numero-wrap">
@@ -480,6 +566,20 @@ main{position:relative;z-index:2}
     <div class="hero-capa">
       <div class="vertical mono">hecha en méxico · sin tocar tu banco</div>
     </div>
+  </section>
+
+  <!-- 1b · cómo funciona -->
+  <section class="seccion como" id="como">
+    <span class="kicker mono" data-rev>cómo funciona</span>
+    <h2 class="titulo-grande" data-rev>tres pasos y <em>listo</em>.</h2>
+    <ol class="pasos">
+      <li class="paso" data-rev><span class="n">1</span><h3>te la dejamos lista</h3>
+        <p>Nos dices dónde tienes tu dinero y damos de alta tus cuentas contigo. Tú no configuras nada.</p></li>
+      <li class="paso" data-rev><span class="n">2</span><h3>anotas en segundos</h3>
+        <p>Cuando gastas o cambia un saldo, lo anotas desde tu celular o tu compu. La app no entra a tu banco.</p></li>
+      <li class="paso" data-rev><span class="n">3</span><h3>ves cuánto tienes y cuánto ganas</h3>
+        <p>Tu total, lo que te dan tus cajitas día por día, tus pagos fijos y tu mes explicado.</p></li>
+    </ol>
   </section>
 
   <!-- 2 · por dentro -->
@@ -606,7 +706,54 @@ main{position:relative;z-index:2}
     <div class="garantias">
       <div class="garantia" data-rev><h3>no movemos tu dinero</h3><p>La app no paga, no transfiere y no custodia nada. Solo hace las cuentas.</p></div>
       <div class="garantia" data-rev><h3>no entramos a tu banco</h3><p>Tú capturas lo que ves en tus apps. Nadie más tiene acceso a tus cuentas.</p></div>
-      <div class="garantia" data-rev><h3>tus datos son tuyos</h3><p>Los puedes exportar o borrar cuando quieras, desde la misma app.</p></div>
+      <div class="garantia" data-rev><h3>tus datos son tuyos</h3><p>No los vendemos ni los compartimos. Si un día te quieres ir, te damos todo tu historial y lo borramos.</p></div>
+    </div>
+  </section>
+
+  <!-- 5b · precio -->
+  <section class="seccion" id="precio">
+    <div class="precio-grid">
+      <div class="precio-txt">
+        <span class="kicker mono" data-rev>precio</span>
+        <h2 class="titulo-grande" data-rev>un solo plan, <em>todo incluido</em>.</h2>
+        <p data-rev>Sin niveles ni letras chiquitas: pagas lo mismo tengas dos cuentas o diez. Si pagas el año de una vez, te ahorras el 20%.</p>
+      </div>
+      <div class="plan vidrio" data-rev>
+        <div class="plan-toggle" role="group" aria-label="Forma de pago">
+          <button type="button" id="p-mensual" aria-pressed="true">mensual</button>
+          <button type="button" id="p-anual" aria-pressed="false">anual <span class="ahorro">ahorra 20%</span></button>
+        </div>
+        <div class="plan-precio"><span class="signo">$</span><span id="p-monto">150</span><span class="per" id="p-per">al mes</span></div>
+        <p class="plan-nota" id="p-nota" aria-live="polite">Pagas mes con mes. Cancelas cuando quieras.</p>
+        <ul class="plan-lista">
+          <li>Todas tus cuentas, cajitas, tarjetas e inversiones</li>
+          <li>Lo que ganan tus cajitas, calculado día por día</li>
+          <li>Suscripciones con aviso el día que tocan</li>
+          <li>Resumen del mes, metas, deudas y fondos aparte</li>
+          <li>Te la dejamos lista con tus cuentas</li>
+          <li>Ayuda por WhatsApp</li>
+        </ul>
+        <a class="liquido vidrio grande" href="#lugar" id="p-cta">quiero un lugar</a>
+        <p class="plan-pie">Precios en pesos mexicanos.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5c · preguntas -->
+  <section class="seccion" id="preguntas">
+    <span class="kicker mono" data-rev>preguntas</span>
+    <h2 class="titulo-grande" data-rev>lo que casi todos <em>preguntan</em>.</h2>
+    <div class="preguntas" data-rev>
+      <details><summary>¿Se conecta a mi banco?</summary>
+        <p>No. Tú anotas tus saldos y tus gastos; la app nunca te pide contraseñas ni entra a tus cuentas. Lo que ganan tus cajitas y el precio de tus acciones sí se calculan solos.</p></details>
+      <details><summary>¿En qué celular funciona?</summary>
+        <p>En cualquiera: iPhone, Android o tu compu. Es una app web: la abres desde el navegador y la agregas a tu pantalla de inicio como cualquier otra app. No se descarga de ninguna tienda.</p></details>
+      <details><summary>¿Cuánto tiempo me va a tomar?</summary>
+        <p>Darla de alta lo hacemos contigo. Después, anotar un gasto toma unos segundos.</p></details>
+      <details><summary>¿Y si me quiero salir?</summary>
+        <p>Cancelas cuando quieras. Si te vas, te damos todo tu historial y lo borramos.</p></details>
+      <details><summary>¿Quién ve mis datos?</summary>
+        <p>Entras con tu correo y tu contraseña. No vendemos ni compartimos tus datos con nadie.</p></details>
     </div>
   </section>
 
@@ -683,6 +830,7 @@ main{position:relative;z-index:2}
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/ScrollTrigger.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <script>
 (() => {
   'use strict';
@@ -690,6 +838,13 @@ main{position:relative;z-index:2}
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
   const pad = n => String(n).padStart(2, '0');
   const html = document.documentElement;
+
+  // los planes van antes que el formulario: el mensaje de WhatsApp los menciona
+  const PLANES = {
+    mensual: { monto: '150', per: 'al mes', nota: 'Pagas mes con mes. Cancelas cuando quieras.', msg: 'el plan mensual ($150 al mes)' },
+    anual: { monto: '1,440', per: 'al año', nota: 'Equivale a $120 al mes: te ahorras $360 al año.', msg: 'el plan anual ($1,440 al año)' },
+  };
+  let plan = 'mensual', planElegido = false;
 
   // ── el formulario arma el mensaje de WhatsApp (funciona con o sin animación) ──
   const WA = '522216675776';
@@ -705,6 +860,7 @@ main{position:relative;z-index:2}
     const msg = limpio(fMsg.value).slice(0, 400);
     let t = `Hola, soy ${nombre || '—'}. Quiero un lugar en Mi Cartera.`;
     if (apps.length) t += `\nTengo mi dinero en: ${apps.join(', ')}.`;
+    if (planElegido) t += `\nMe interesa ${PLANES[plan].msg}.`;
     if (msg) t += `\nMe gustaría saber: ${msg}`;
     // un carácter pegado roto (surrogate suelto) hace tronar encodeURIComponent
     try { fEnviar.href = `https://wa.me/${WA}?text=${encodeURIComponent(t)}`; }
@@ -719,6 +875,25 @@ main{position:relative;z-index:2}
     if (fOtra.checked && !limpio(fOtraCual.value)) { e.preventDefault(); fErr.textContent = 'Escribe cuál es tu otro banco o app.'; fErr.hidden = false; fOtraCual.focus(); }
   });
   armar();
+
+  // ── precio: mensual o anual; al pasar a anual, confeti ──────────────
+  const pMensual = $('#p-mensual'), pAnual = $('#p-anual');
+  const ponerPlan = (p, festejo) => {
+    plan = p; planElegido = true;
+    pMensual.setAttribute('aria-pressed', String(p === 'mensual'));
+    pAnual.setAttribute('aria-pressed', String(p === 'anual'));
+    $('#p-monto').textContent = PLANES[p].monto; $('#p-per').textContent = PLANES[p].per; $('#p-nota').textContent = PLANES[p].nota;
+    armar();
+    if (festejo && window.confetti && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const k = pAnual.getBoundingClientRect();
+      window.confetti({ particleCount: 110, spread: 75, startVelocity: 38, ticks: 200, scalar: 0.95, zIndex: 95,
+        origin: { x: (k.left + k.width / 2) / innerWidth, y: (k.top + k.height / 2) / innerHeight },
+        colors: ['#a7d8b8', '#e8ebe3', '#d7b36a', '#2f6f4f'] });
+    }
+  };
+  pMensual.addEventListener('click', () => ponerPlan('mensual', false));
+  pAnual.addEventListener('click', () => ponerPlan('anual', plan !== 'anual'));
+  $('#p-cta').addEventListener('click', () => { planElegido = true; armar(); });
 
   // ── el visor: cualquier pantalla en grande (funciona con o sin animación) ──
   const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -825,10 +1000,21 @@ main{position:relative;z-index:2}
   capaCartas.addEventListener('scroll', cuentaCarrusel, { passive: true });
   cuentaCarrusel();
 
+  // ── menú del celular ──────────────────────────────────────────────────
+  const menuBtn = $('#menu-btn'), menuPanel = $('#menu-panel');
+  const menu = abrir => {
+    menuPanel.hidden = !abrir; menuBtn.setAttribute('aria-expanded', String(abrir));
+    menuBtn.setAttribute('aria-label', abrir ? 'Cerrar el menú' : 'Abrir el menú');
+  };
+  menuBtn.addEventListener('click', () => menu(menuPanel.hidden));
+  $$('a', menuPanel).forEach(a => a.addEventListener('click', () => menu(false)));
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !menuPanel.hidden) { menu(false); menuBtn.focus(); } });
+  addEventListener('scroll', () => { if (!menuPanel.hidden && Math.abs(scrollY - (menu.y ?? scrollY)) > 80) menu(false); menu.y = scrollY; }, { passive: true });
+
   // ── "siguiente": lleva a la siguiente parte de la página ──────────────
   // Las paradas se calculan al momento (las secciones fijas cambian de alto).
   const arriba = el => el.getBoundingClientRect().top + scrollY;
-  let paradas = () => [...[$('#dentro')], ...$$('.cap'), $('#todo'), $('#distinta'), $('#confianza'), $('#forma')]
+  let paradas = () => [$('#como'), $('#dentro'), ...$$('.cap'), $('#todo'), $('#distinta'), $('#confianza'), $('#precio'), $('#preguntas'), $('#forma')]
     .map(el => Math.round(arriba(el) - (el.classList.contains('cap') ? 70 : 0)));
   let irA = y => scrollTo({ top: y, behavior: reducido ? 'auto' : 'smooth' });
   const destinoAncla = id => {
@@ -981,7 +1167,7 @@ main{position:relative;z-index:2}
     // cajas del título, del subtítulo y de las etiquetas de las orillas: un chip
     // que pase por encima se vuelve casi transparente para no tapar el texto
     const centro = $('.hero-centro');
-    cajas = ['.hero-titulo', '.hero-sub'].map(s => {
+    cajas = ['.hero-eyebrow', '.hero-titulo', '.hero-sub', '.hero-ctas', '.hero-precio'].map(s => {
       const el = $(s, centro), m = 10;
       const x = centro.offsetLeft + el.offsetLeft, y = centro.offsetTop + el.offsetTop;
       return { x1: x - m, y1: y - m, x2: x + el.offsetWidth + m, y2: y + el.offsetHeight + m };
@@ -1092,9 +1278,9 @@ main{position:relative;z-index:2}
   function pintarGaleria(ahora, dt) {
     if (!fijo || !gal.visible) return;              // en el celular es un carrusel normal
     // el avance del scroll también llega con resorte (como el morph del original)
-    const metaMorph = gal.fase === 'circulo' ? Math.min(1, gal.p / 0.25) : 0;
-    const metaGiro = Math.max(0, Math.min(1, (gal.p - 0.25) / 0.75));
-    const suave = 1 - Math.exp(-dt * 3.2);        // igual de rápido a 60 que a 20 cuadros por segundo
+    const metaMorph = gal.fase === 'circulo' ? Math.min(1, gal.p / 0.12) : 0;
+    const metaGiro = Math.max(0, Math.min(1, (gal.p - 0.12) / 0.88));
+    const suave = 1 - Math.exp(-dt * 5);        // igual de rápido a 60 que a 20 cuadros por segundo
     gal.morph += (metaMorph - gal.morph) * suave;
     gal.pm += (metaGiro - gal.pm) * suave;
     const ds = destinos();
@@ -1120,8 +1306,8 @@ main{position:relative;z-index:2}
   const despertar = () => {
     if (gal.fase !== 'dormida') return;
     gal.fase = 'dispersa';
-    relojes.push(setTimeout(() => { if (gal.fase === 'dispersa') gal.fase = 'linea'; }, 300));
-    relojes.push(setTimeout(() => { gal.fase = 'circulo'; }, 1300));
+    relojes.push(setTimeout(() => { if (gal.fase === 'dispersa') gal.fase = 'linea'; }, 150));
+    relojes.push(setTimeout(() => { gal.fase = 'circulo'; }, 650));
   };
   if (fijo) new IntersectionObserver(([e]) => {
     gal.visible = e.isIntersecting;
@@ -1146,7 +1332,8 @@ main{position:relative;z-index:2}
   // ── entrada: sin cortina; el título sube y las cuentas aparecen, sin detener nada ──
   gsap.timeline({ defaults: { ease: 'expo.out' } })
     .from('.hero-titulo .linea > span', { yPercent: 115, duration: 1.1, stagger: 0.08 }, 0.05)
-    .from('.hero-sub > span', { opacity: 0, y: 14, duration: 0.9 }, 0.3)
+    .from('.hero-eyebrow > span, .hero-sub > span', { opacity: 0, y: 14, duration: 0.9, stagger: 0.08 }, 0.2)
+    .from('.hero-ctas, .hero-precio', { opacity: 0, y: 12, duration: 0.8, clearProps: 'opacity,transform' }, 0.45)
     .from('.nav, .vertical, #siguiente', { opacity: 0, duration: 0.9, clearProps: 'opacity' }, 0.35)
     .to(orb, { aparece: 1, duration: 1.6, ease: 'power2.out' }, 0);
 
@@ -1214,7 +1401,7 @@ main{position:relative;z-index:2}
     tabs.forEach(t => t.addEventListener('click', () => irA(yCap(+t.dataset.cap))));
 
     // ── la galería se fija mientras las tarjetas pasan de círculo a arco ──
-    stGal = ScrollTrigger.create({ trigger: '.galeria', start: 'top top', end: () => '+=' + innerHeight * 1.7, pin: true, invalidateOnRefresh: true,
+    stGal = ScrollTrigger.create({ trigger: '.galeria', start: 'top top', end: () => '+=' + innerHeight * 1.3, pin: true, invalidateOnRefresh: true,
       onUpdate(self) {
         gal.p = self.progress;
         if (self.progress > 0.02 && gal.fase !== 'circulo') { despertar(); relojes.forEach(clearTimeout); gal.fase = 'circulo'; }
@@ -1227,10 +1414,10 @@ main{position:relative;z-index:2}
 
   // "siguiente" con movimiento: primero el número, luego cada capítulo, la galería y el resto
   paradas = () => {
-    const ps = [tlHero.scrollTrigger.end];
-    if (fijo) { for (let i = 0; i < 5; i++) ps.push(yCap(i)); ps.push(stGal.start + (stGal.end - stGal.start) * 0.35); }
+    const ps = [tlHero.scrollTrigger.end, arriba($('#como'))];
+    if (fijo) { for (let i = 0; i < 5; i++) ps.push(yCap(i)); ps.push(stGal.start + (stGal.end - stGal.start) * 0.2); }
     else { $$('.cap').forEach(c => ps.push(arriba(c) - 70)); ps.push(arriba($('.gal-arco-txt')) - 70); }
-    [$('#distinta'), $('#confianza')].forEach(el => ps.push(arriba(el)));
+    [$('#distinta'), $('#confianza'), $('#precio'), $('#preguntas')].forEach(el => ps.push(arriba(el)));
     ps.push(arriba($('#forma')) - 24);              // termina con el formulario completo a la vista
     return ps.map(Math.round);
   };
