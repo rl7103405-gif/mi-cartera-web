@@ -1,0 +1,9 @@
+# notas internas: se quedan en esta computadora
+LEEME.md
+.playwright-mcp/
+_prueba/
+node_modules/
+*.zip
+*.pdf
+*.csv
+*.xlsx
