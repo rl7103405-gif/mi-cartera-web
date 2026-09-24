@@ -21,7 +21,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230c100d'/%3E%3Cellipse cx='32' cy='32' rx='22' ry='9' fill='none' stroke='%23a7d8b8' stroke-width='2' transform='rotate(-12 32 32)'/%3E%3Ccircle cx='32' cy='32' r='6' fill='%23e8ebe3'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Onest:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
 /* ── tokens ──────────────────────────────────────────────────────────────
    Diseño de un solo mundo (oscuro a propósito): carbón verde cálido, hueso
@@ -30,11 +30,11 @@
   color-scheme:dark;
   --noche:#0c100d; --hueso:#e8ebe3; --gris:#9aa39c; --gris-2:#8a948c;
   --linea:rgba(232,235,227,.12); --acento:#a7d8b8; --verde:#2f6f4f;
-  /* Títulos en Sora (geométrica, un poco futurista) y texto en Onest: sin la cursiva
-     con serifa, que es justo lo que hacía que se viera "hecha por IA". Sora y no
-     Bricolage: el motor de Safari de prueba pinta Bricolage siempre gruesa. */
-  --display:'Sora', 'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --texto:'Onest', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Geist ligera + una palabra por título en cursiva Instrument Serif. Se probó
+     Sora + Onest (24-sep) y Beto prefirió esta. */
+  --display:'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --texto:'Geist', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --serif:'Instrument Serif', Georgia, 'Times New Roman', serif;
   --mono:'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
   --lado:clamp(16px, 5vw, 96px);
   --suave:cubic-bezier(.7,0,.2,1);
@@ -62,7 +62,7 @@ body{font-family:var(--texto);font-weight:400;background:var(--noche);color:var(
      -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 a{color:inherit;text-decoration:none}
 img{display:block;max-width:100%}
-em{font-style:normal;font-weight:500;color:var(--acento)}
+em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--acento);letter-spacing:-.005em}
 .hero-titulo,.titulo-grande,.cap h2,.frase,.gal-grande,.numero,.pie-gigante,.marca,.fila h3,.garantia h3,.paso h3,.plan-precio,.menu-panel a{font-family:var(--display)}
 h1,h2,h3{text-wrap:balance}
 .mono{font-family:var(--mono);font-size:11px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:var(--gris)}
@@ -179,7 +179,7 @@ main{position:relative;z-index:2}
 .hero-titulo{font-weight:300;font-size:clamp(40px,min(8vw,10.5vh),118px);line-height:.98;letter-spacing:-.05em}
 .hero-titulo .linea{display:block;overflow:hidden;padding:0 .04em .1em}
 .hero-titulo .linea>span{display:inline-block}
-.hero-titulo em{font-weight:500}
+.hero-titulo em{font-size:1.1em}
 .hero-sub{margin:26px auto 0;max-width:440px;font-size:clamp(15px,1.2vw,18px);line-height:1.55;color:var(--gris)}
 .hero-sub>span{display:inline-block}
 .hero-eyebrow>span{display:inline-block}
@@ -489,7 +489,7 @@ main{position:relative;z-index:2}
 .pie-links a{display:inline-block;padding:14px 0}   /* blanco de dedo de 44 px */
 .pie-gigante{font-weight:300;font-size:18.6vw;letter-spacing:-.075em;line-height:.8;white-space:nowrap;margin:64px 0 0 -.04em;
   background:linear-gradient(180deg,rgba(232,235,227,.9),rgba(232,235,227,.06) 88%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.pie-gigante span{font-weight:500}
+.pie-gigante span{font-family:var(--serif);font-style:italic;letter-spacing:-.03em}
 .pie-bajo{display:flex;justify-content:space-between;margin-top:18px}
 </style>
 </head>
