@@ -398,6 +398,10 @@ main{position:relative;z-index:2}
 
 /* precio: un solo plan, mensual o anual */
 .precio-grid{display:grid;grid-template-columns:1fr minmax(0,470px);gap:clamp(40px,6vw,110px);align-items:start}
+.lead{margin-top:28px;color:var(--gris);font-size:clamp(16px,1.3vw,19px);max-width:560px;line-height:1.6}
+.firma{margin-top:26px;font-size:17px;color:var(--hueso)}
+.firma .mono{margin-left:6px}
+.firma a{color:var(--acento);border-bottom:1px solid currentColor}
 .precio-txt p{margin-top:24px;color:var(--gris);font-size:clamp(16px,1.3vw,19px);max-width:420px;line-height:1.6}
 .plan{position:relative;border-radius:32px;padding:clamp(24px,3vw,36px);--desenfoque:16px;--tinte:rgba(20,28,22,.3)}
 .plan-toggle{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(232,235,227,.05);box-shadow:inset 0 0 0 1px var(--linea);width:max-content;max-width:100%}
@@ -509,7 +513,7 @@ main{position:relative;z-index:2}
     <a href="#precio">Precio</a>
     <a href="#preguntas">Preguntas</a>
   </nav>
-  <a class="liquido vidrio" href="#lugar">Quiero una</a>
+  <a class="liquido vidrio" href="#lugar">La quiero</a>
   <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu-panel" aria-label="Abrir el menú"><span></span><span></span></button>
 </header>
 <nav class="menu-panel vidrio" id="menu-panel" aria-label="Menú" hidden>
@@ -518,7 +522,7 @@ main{position:relative;z-index:2}
   <a href="#todo">Todo lo que hace</a>
   <a href="#precio">Precio</a>
   <a href="#preguntas">Preguntas</a>
-  <a href="#lugar">Quiero una</a>
+  <a href="#lugar">Quiero mi cartera</a>
 </nav>
 
 <main>
@@ -541,17 +545,17 @@ main{position:relative;z-index:2}
     <div class="destello" aria-hidden="true"></div>
 
     <div class="hero-centro">
-      <p class="hero-eyebrow"><span>Una app para llevar tus finanzas personales</span></p>
+      <p class="hero-eyebrow"><span>Para quien tiene su dinero en varias apps</span></p>
       <h1 class="hero-titulo">
         <span class="linea"><span>Todo tu dinero,</span></span>
         <span class="linea"><span>en un <em>número</em>.</span></span>
       </h1>
-      <p class="hero-sub"><span>Registra tus cuentas de Nu, Revolut, tus cajitas, tus inversiones y tu efectivo. Mi Cartera suma todo y calcula cuánto has ganado, sin conectarse a tu banco.</span></p>
+      <p class="hero-sub"><span>Una sola app para Nu, Revolut, Mercado Pago, tus cajitas, tus inversiones y tu efectivo. Tú actualizas tus saldos; Mi Cartera calcula cuánto tienes en total y cuánto te pagan realmente, sin conectarse a tu banco.</span></p>
       <div class="hero-ctas">
-        <a class="liquido vidrio medio" href="#lugar">Quiero una</a>
+        <a class="liquido vidrio medio" href="#lugar">Quiero mi cartera</a>
         <a class="boton-texto" href="#como">Cómo funciona ↓</a>
       </div>
-      <p class="hero-precio">$150 al mes · Configuración incluida</p>
+      <p class="hero-precio">$150 al mes · Damos de alta tus cuentas contigo</p>
     </div>
 
     <div class="numero-wrap">
@@ -568,15 +572,32 @@ main{position:relative;z-index:2}
     </div>
   </section>
 
-  <!-- 1b · cómo funciona -->
+  <!-- 1b · lo que la hace distinta: va primero porque es la razón para pagar -->
+  <section class="seccion" id="distinta">
+    <span class="kicker mono" data-rev>Lo que la hace distinta</span>
+    <h2 class="titulo-grande" data-rev>Las demás te dicen en qué gastaste. Esta te dice <em>cuánto</em> has ganado.</h2>
+    <p class="lead" data-rev>No es otra app para apuntar gastos. Mi Cartera junta tu patrimonio y calcula cuánto te pagan realmente tus cuentas de ahorro e inversión: por tramos, día por día y después de impuestos.</p>
+    <div class="filas">
+      <div class="fila" data-rev><span class="n">Tasas</span><h3>Por tramos</h3>
+        <p>La mayoría de las cajitas paga una tasa hasta cierto monto y otra por encima. La app calcula cada tramo con interés compuesto diario.</p></div>
+      <div class="fila" data-rev><span class="n">Impuestos</span><h3>Lo que recibes, no lo que anuncian</h3>
+        <p>Si tu banco retiene impuestos, la app los descuenta. El número que ves es el que realmente es tuyo.</p></div>
+      <div class="fila" data-rev><span class="n">Historia</span><h3>Lo ganado no se borra</h3>
+        <p>Si mueves dinero entre cuentas, los rendimientos que ya generaste se conservan. Nada se recalcula desde cero.</p></div>
+      <div class="fila" data-rev><span class="n">Apartados</span><h3>Dinero que no se toca</h3>
+        <p>El fondo de la universidad, el del coche o el de emergencias: separado dentro de tus cuentas y contado aparte.</p></div>
+    </div>
+  </section>
+
+  <!-- 1c · cómo funciona -->
   <section class="seccion como" id="como">
     <span class="kicker mono" data-rev>Cómo funciona</span>
     <h2 class="titulo-grande" data-rev>Tres pasos y <em>listo</em>.</h2>
     <ol class="pasos">
       <li class="paso" data-rev><span class="n">1</span><h3>Te la dejamos lista</h3>
         <p>Nos dices dónde tienes tu dinero y nosotros damos de alta tus cuentas. No tienes que configurar nada.</p></li>
-      <li class="paso" data-rev><span class="n">2</span><h3>Registras en segundos</h3>
-        <p>Cada gasto o cambio de saldo se registra en segundos desde tu celular o tu computadora. La app nunca entra a tu banco.</p></li>
+      <li class="paso" data-rev><span class="n">2</span><h3>Tú decides qué tanto llevar</h3>
+        <p>Puedes registrar cada gasto para ver tu mes completo, o solo actualizar tus saldos si lo que quieres es seguir tu patrimonio y tus rendimientos. La app nunca entra a tu banco.</p></li>
       <li class="paso" data-rev><span class="n">3</span><h3>Ves cuánto tienes y cuánto ganas</h3>
         <p>Tu patrimonio total, el rendimiento diario de tus cajitas, tus pagos fijos y el resumen de cada mes.</p></li>
     </ol>
@@ -606,22 +627,6 @@ main{position:relative;z-index:2}
         </article>
         <article class="cap">
           <div class="cap-txt">
-            <span class="num mono">Suscripciones</span>
-            <h2>Tus pagos fijos, <em>a tiempo</em>.</h2>
-            <p>El gimnasio, Netflix, la renta. La app te avisa el día del cargo, lo registras con un toque y detecta sola los pagos que se repiten.</p>
-          </div>
-          <button class="mini-tel" type="button" aria-label="Ver en grande: suscripciones"><img src="assets/grandes/06.webp" alt="Suscripciones y las que la app detecta sola" loading="lazy"></button>
-        </article>
-        <article class="cap">
-          <div class="cap-txt">
-            <span class="num mono">Inversiones</span>
-            <h2>Tus inversiones, <em>claras</em>.</h2>
-            <p>Cuánto invertiste, cuánto vale hoy y cuánto gana o pierde cada acción, con dividendos incluidos.</p>
-          </div>
-          <button class="mini-tel" type="button" aria-label="Ver en grande: inversiones"><img src="assets/grandes/09.webp" alt="Tablero de inversiones" loading="lazy"></button>
-        </article>
-        <article class="cap">
-          <div class="cap-txt">
             <span class="num mono">Resumen</span>
             <h2>El mes, <em>explicado</em>.</h2>
             <p>Cuánto entró, cuánto salió y cómo vas contra los meses anteriores. Explicado en palabras, no solo en gráficas.</p>
@@ -642,8 +647,6 @@ main{position:relative;z-index:2}
               <div class="pantallas">
                 <img class="scr" src="assets/grandes/01.webp" alt="Inicio de Mi Cartera con el total de una cartera de ejemplo">
                 <img class="scr" src="assets/grandes/03.webp" alt="Cuentas con su rendimiento por tramos" loading="lazy">
-                <img class="scr" src="assets/grandes/06.webp" alt="Suscripciones y las que la app detecta sola" loading="lazy">
-                <img class="scr" src="assets/grandes/09.webp" alt="Tablero de inversiones" loading="lazy">
                 <img class="scr" src="assets/grandes/13.webp" alt="Resumen y cierre del mes" loading="lazy">
                 <div class="escaner" id="escaner" aria-hidden="true"></div>
               </div>
@@ -658,18 +661,16 @@ main{position:relative;z-index:2}
     <nav class="cap-tabs" aria-label="Capítulos">
       <button class="cap-tab" type="button" data-cap="0" aria-current="true">Inicio</button>
       <button class="cap-tab" type="button" data-cap="1">Rendimientos</button>
-      <button class="cap-tab" type="button" data-cap="2">Suscripciones</button>
-      <button class="cap-tab" type="button" data-cap="3">Inversiones</button>
-      <button class="cap-tab" type="button" data-cap="4">Resumen</button>
+      <button class="cap-tab" type="button" data-cap="2">Resumen</button>
     </nav>
     <div class="barra-caps" aria-hidden="true"><i id="barraCaps"></i></div>
   </section>
 
   <!-- 3 · todo lo que hace -->
   <section class="galeria" id="todo">
-    <div class="gal-intro" aria-hidden="true"><p class="gal-grande">Dieciocho<br>pantallas.</p><p class="mono">Sigue bajando para verlas</p></div>
+    <div class="gal-intro" aria-hidden="true"><p class="gal-grande">Y todo<br>lo demás.</p><p class="mono">Suscripciones, inversiones, metas y deudas</p></div>
     <div class="gal-arco-txt">
-      <span class="kicker mono">Y todo lo demás</span>
+      <span class="kicker mono">Dentro de la app</span>
       <h2 class="titulo-grande">Todo lo que hace, <em>en una app</em>.</h2>
       <p>Movimientos, categorías, suscripciones, inversiones, el fondo, metas y deudas.
         <span class="solo-fino">Pasa el mouse para ver qué es cada pantalla, y haz clic para verla en grande.</span><span class="solo-tactil">Desliza de lado para verlas y toca una para verla en grande.</span></p>
@@ -683,31 +684,23 @@ main{position:relative;z-index:2}
     <div class="gal-cartas" id="cartas" data-lenis-prevent-horizontal></div>
   </section>
 
-  <!-- 4 · lo que la hace distinta -->
-  <section class="seccion" id="distinta">
-    <span class="kicker mono" data-rev>Lo que la hace distinta</span>
-    <h2 class="titulo-grande" data-rev>Las demás te dicen en qué gastaste. Esta te dice <em>cuánto</em> has ganado.</h2>
-    <div class="filas">
-      <div class="fila" data-rev><span class="n">Tasas</span><h3>Por tramos</h3>
-        <p>La mayoría de las cajitas paga una tasa hasta cierto monto y otra por encima. La app calcula cada tramo con interés compuesto diario.</p></div>
-      <div class="fila" data-rev><span class="n">Impuestos</span><h3>Lo que recibes, no lo que anuncian</h3>
-        <p>Si tu banco retiene impuestos, la app los descuenta. El número que ves es el que realmente es tuyo.</p></div>
-      <div class="fila" data-rev><span class="n">Historia</span><h3>Lo ganado no se borra</h3>
-        <p>Si mueves dinero entre cuentas, los rendimientos que ya generaste se conservan. Nada se recalcula desde cero.</p></div>
-      <div class="fila" data-rev><span class="n">Apartados</span><h3>Dinero que no se toca</h3>
-        <p>El fondo de la universidad, el del coche o el de emergencias: separado dentro de tus cuentas y contado aparte.</p></div>
-    </div>
-  </section>
-
   <!-- 5 · confianza -->
   <section class="seccion" id="confianza">
     <span class="kicker mono" data-rev>Tu banco</span>
     <p class="frase" id="frase">Lo único que NUNCA te vamos a pedir es <em>la contraseña</em> de tu banco.</p>
     <div class="garantias">
       <div class="garantia" data-rev><h3>No movemos tu dinero</h3><p>La app no hace pagos, no transfiere y no guarda dinero. Solo hace las cuentas.</p></div>
-      <div class="garantia" data-rev><h3>No entramos a tu banco</h3><p>Tú capturas lo que ves en tus apps. Nadie más tiene acceso a tus cuentas.</p></div>
+      <div class="garantia" data-rev><h3>No entramos a tu banco</h3><p>Tú capturas lo que ves en tus apps. Mi Cartera nunca tiene acceso a tus cuentas bancarias.</p></div>
       <div class="garantia" data-rev><h3>Tus datos son tuyos</h3><p>No los vendemos ni los compartimos. Si decides irte, te entregamos tu historial completo y lo borramos.</p></div>
     </div>
+  </section>
+
+  <!-- 5a · quién está detrás: sin esto, un desconocido no le da sus saldos a nadie -->
+  <section class="seccion" id="quien">
+    <span class="kicker mono" data-rev>Quién está detrás</span>
+    <h2 class="titulo-grande" data-rev>La hice porque yo tenía este <em>problema</em>.</h2>
+    <p class="lead" data-rev>Tenía mi dinero repartido entre Nu, Revolut, cajitas, inversiones y efectivo, y no sabía cuánto tenía en total ni cuánto me pagaba realmente cada lugar. La construí para mí y la uso todos los días; hoy también la usan unas pocas personas cercanas. Ahora la estoy abriendo a los primeros diez.</p>
+    <p class="firma" data-rev>Roberto <span class="mono">· WhatsApp <a href="https://wa.me/522216675776" target="_blank" rel="noopener">221 667 5776</a></span></p>
   </section>
 
   <!-- 5b · precio -->
@@ -730,10 +723,10 @@ main{position:relative;z-index:2}
           <li>Lo que ganan tus cajitas, calculado día por día</li>
           <li>Suscripciones con aviso el día que tocan</li>
           <li>Resumen del mes, metas, deudas y fondos aparte</li>
-          <li>Configuramos la app con tus cuentas</li>
+          <li>Damos de alta tus cuentas contigo</li>
           <li>Ayuda por WhatsApp</li>
         </ul>
-        <a class="liquido vidrio grande" href="#lugar" id="p-cta">Quiero un lugar</a>
+        <a class="liquido vidrio grande" href="#lugar" id="p-cta">Quiero mi cartera</a>
         <p class="plan-pie">Precios en pesos mexicanos.</p>
       </div>
     </div>
@@ -752,8 +745,8 @@ main{position:relative;z-index:2}
         <p>La configuración la hacemos nosotros, contigo. Después, registrar un gasto toma unos segundos.</p></details>
       <details><summary>¿Y si me quiero salir?</summary>
         <p>Cancelas cuando quieras. Si te vas, te damos todo tu historial y lo borramos.</p></details>
-      <details><summary>¿Quién ve mis datos?</summary>
-        <p>Entras con tu correo y tu contraseña. No vendemos ni compartimos tus datos con nadie.</p></details>
+      <details><summary>¿Alguien de Mi Cartera puede ver mis saldos?</summary>
+        <p>Tus datos se guardan en los servidores de Google (Firebase) y entras solo tú, con tu correo y tu contraseña. Como administradores del servicio podemos entrar a la base de datos; lo hacemos únicamente para darte soporte cuando tú nos lo pides. No vendemos ni compartimos tus datos con nadie.</p></details>
     </div>
   </section>
 
@@ -858,7 +851,7 @@ main{position:relative;z-index:2}
     const cual = limpio(fOtraCual.value).slice(0, 60);
     const apps = $$('#f-apps input:checked').map(i => (i === fOtra && cual) ? cual : i.value);
     const msg = limpio(fMsg.value).slice(0, 400);
-    let t = `Hola, soy ${nombre || '—'}. Quiero un lugar en Mi Cartera.`;
+    let t = `Hola, soy ${nombre || '—'}. Quiero mi cartera.`;
     if (apps.length) t += `\nTengo mi dinero en: ${apps.join(', ')}.`;
     if (planElegido) t += `\nMe interesa ${PLANES[plan].msg}.`;
     if (msg) t += `\nMe gustaría saber: ${msg}`;
@@ -1014,7 +1007,7 @@ main{position:relative;z-index:2}
   // ── "siguiente": lleva a la siguiente parte de la página ──────────────
   // Las paradas se calculan al momento (las secciones fijas cambian de alto).
   const arriba = el => el.getBoundingClientRect().top + scrollY;
-  let paradas = () => [$('#como'), $('#dentro'), ...$$('.cap'), $('#todo'), $('#distinta'), $('#confianza'), $('#precio'), $('#preguntas'), $('#forma')]
+  let paradas = () => [$('#como'), $('#dentro'), ...$$('.cap'), $('#todo'), $('#distinta'), $('#confianza'), $('#quien'), $('#precio'), $('#preguntas'), $('#forma')]
     .map(el => Math.round(arriba(el) - (el.classList.contains('cap') ? 70 : 0)));
   let irA = y => scrollTo({ top: y, behavior: reducido ? 'auto' : 'smooth' });
   const destinoAncla = id => {
@@ -1371,7 +1364,7 @@ main{position:relative;z-index:2}
       .to('.numero-in', { y: () => -innerHeight * 0.14, opacity: 0, filter: 'blur(12px)', ease: 'power1.in', duration: 0.55 }, 0);
 
     // ── capítulos: el teléfono se queda y cambia de pantalla ────────────
-    const caps = $$('.cap'), scrs = $$('.scr'), barra = $('#barraCaps'), esc = $('#escaner'), tabs = $$('.cap-tab');
+    const caps = $$('.cap'), scrs = $$('.scr'), barra = $('#barraCaps'), esc = $('#escaner'), tabs = $$('.cap-tab'), N = caps.length;
     gsap.set(caps.slice(1), { opacity: 0 });
     gsap.set(scrs.slice(1), { opacity: 0 });
     gsap.set(esc, { opacity: 0 });
@@ -1379,14 +1372,14 @@ main{position:relative;z-index:2}
     // La pestaña activa (y el visor, que abre la pantalla del capítulo actual) lee el
     // tiempo de la línea, no el scroll: con scrub la línea va detrás del scroll.
     const tlCaps = gsap.timeline({
-      scrollTrigger: { trigger: '.dentro', start: 'top top', end: () => '+=' + innerHeight * 3, scrub: 1, pin: true, invalidateOnRefresh: true },
+      scrollTrigger: { trigger: '.dentro', start: 'top top', end: () => '+=' + innerHeight * 0.6 * N, scrub: 1, pin: true, invalidateOnRefresh: true },
       onUpdate() {
         barra.style.transform = `scaleX(${tlCaps.progress()})`;
-        const i = Math.max(0, Math.min(4, Math.floor(tlCaps.time() - 0.2)));
+        const i = Math.max(0, Math.min(N - 1, Math.floor(tlCaps.time() - 0.2)));
         if (i !== capActual) { capActual = i; marcar(i); }
       } });
-    tlCaps.to({}, { duration: 5 }, 0);           // el teléfono no gira: plano se lee nítido
-    for (let i = 1; i < 5; i++) {
+    tlCaps.to({}, { duration: N }, 0);           // el teléfono no gira: plano se lee nítido
+    for (let i = 1; i < N; i++) {
       tlCaps
         .to(caps[i - 1], { opacity: 0, y: -24, filter: 'blur(4px)', duration: 0.26, ease: 'power2.in' }, i)
         .fromTo(caps[i], { opacity: 0, y: 28, filter: 'blur(4px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.36, ease: 'power2.out' }, i + 0.26)
@@ -1397,7 +1390,7 @@ main{position:relative;z-index:2}
     }
     stCaps = tlCaps.scrollTrigger;
     // cada pestaña lleva a donde su capítulo ya se ve completo
-    yCap = i => stCaps.start + (stCaps.end - stCaps.start) * Math.min(1, (i + 0.75) / 5);
+    yCap = i => stCaps.start + (stCaps.end - stCaps.start) * Math.min(1, (i + 0.75) / N);
     tabs.forEach(t => t.addEventListener('click', () => irA(yCap(+t.dataset.cap))));
 
     // ── la galería se fija mientras las tarjetas pasan de círculo a arco ──
@@ -1415,9 +1408,9 @@ main{position:relative;z-index:2}
   // "siguiente" con movimiento: primero el número, luego cada capítulo, la galería y el resto
   paradas = () => {
     const ps = [tlHero.scrollTrigger.end, arriba($('#como'))];
-    if (fijo) { for (let i = 0; i < 5; i++) ps.push(yCap(i)); ps.push(stGal.start + (stGal.end - stGal.start) * 0.2); }
+    if (fijo) { for (let i = 0; i < $$('.cap').length; i++) ps.push(yCap(i)); ps.push(stGal.start + (stGal.end - stGal.start) * 0.2); }
     else { $$('.cap').forEach(c => ps.push(arriba(c) - 70)); ps.push(arriba($('.gal-arco-txt')) - 70); }
-    [$('#distinta'), $('#confianza'), $('#precio'), $('#preguntas')].forEach(el => ps.push(arriba(el)));
+    [$('#distinta'), $('#confianza'), $('#quien'), $('#precio'), $('#preguntas')].forEach(el => ps.push(arriba(el)));
     ps.push(arriba($('#forma')) - 24);              // termina con el formulario completo a la vista
     return ps.map(Math.round);
   };
