@@ -1,0 +1,14 @@
+/* página legal: lectura simple sobre la misma base de estilos, sin movimiento */
+.legal-pagina{background:var(--noche);color:var(--hueso)}
+.pagina-legal{max-width:760px;margin:0 auto;padding:clamp(28px,6vw,72px) 20px 80px;font-size:16.5px;line-height:1.7}
+.pagina-legal h1,.pagina-legal h2.h1{font-family:var(--display);font-weight:500;font-size:clamp(32px,4vw,46px);letter-spacing:-.03em;line-height:1.1;margin-top:40px}
+.pagina-legal h2{font-family:var(--display);font-weight:500;font-size:21px;letter-spacing:-.015em;margin-top:34px}
+.pagina-legal p,.pagina-legal li{color:var(--gris);margin-top:10px}
+.pagina-legal strong{color:var(--hueso);font-weight:500}
+.pagina-legal ul{padding-left:20px}
+.pagina-legal a{color:var(--hueso);text-decoration:underline;text-underline-offset:3px}
+.pagina-legal .fecha{font-size:13px;color:var(--gris-2)}
+.pagina-legal section+section{margin-top:72px;padding-top:8px;border-top:1px solid var(--linea)}
+.borrador{border:1px solid var(--linea);border-radius:16px;padding:14px 18px;margin-top:20px}
+.legal-volver{font-size:14px}
+.legal-volver a{display:inline-flex;align-items:center;min-height:44px}

@@ -7,8 +7,8 @@
 
   // los planes van antes que el formulario: el mensaje de WhatsApp los menciona
   const PLANES = {
-    mensual: { monto: '150', per: 'al mes', nota: 'Pago mes a mes. Cancelas cuando quieras.', msg: 'el plan mensual ($150 al mes)' },
-    anual: { monto: '1,440', per: 'al año', nota: 'Equivale a $120 al mes: ahorras $360 al año.', msg: 'el plan anual ($1,440 al año)' },
+    mensual: { monto: '150', per: 'al mes', nota: 'Pago mes a mes. O $120 al mes con el pago anual.', msg: 'el plan mensual ($150 al mes)' },
+    anual: { monto: '1,440', per: 'al año', nota: '$1,440 MXN en un solo pago al año: equivale a $120 al mes y ahorras $360.', msg: 'el plan anual ($1,440 al año)' },
   };
   let plan = 'mensual', planElegido = false;
 
@@ -17,8 +17,52 @@
   const fNombre = $('#f-nombre'), fMsg = $('#f-msg'), fErr = $('#f-error'), fEnviar = $('#f-enviar');
   const fOtra = $('#f-app-otra'), fOtraCampo = $('#f-otra-campo'), fOtraCual = $('#f-otra-cual');
   const limpio = s => s.replace(/\s+/g, ' ').trim();
+  const fAcepto = $('#f-acepto'), fResumen = $('#f-resumen');
+  // qué haría la app con cada institución. Condicional a propósito: marcar Nu no dice si tiene cajitas
+  const QUE_HACE = {
+    'Nu': 'tu cuenta, tus cajitas si las tienes (con lo que ganan cada día) y tu tarjeta de crédito',
+    'Revolut': 'tu cuenta y, si ahorras ahí, lo que te paga cada día ya con la retención de impuestos',
+    'Mercado Pago': 'tu saldo y, si te paga rendimiento, lo que gana cada día',
+    'Klar': 'tu saldo y, si te paga rendimiento, lo que gana cada día',
+    'BBVA': 'tu cuenta y, si la tienes, tu tarjeta de crédito',
+    'Banamex': 'tu cuenta y, si la tienes, tu tarjeta de crédito',
+    'Banorte': 'tu cuenta y, si la tienes, tu tarjeta de crédito',
+    'Santander': 'tu cuenta y, si la tienes, tu tarjeta de crédito',
+    'HSBC': 'tu cuenta y, si la tienes, tu tarjeta de crédito',
+    'GBM': 'tus acciones y lo que llevas invertido',
+    'efectivo': 'lo que traes en la mano, que tú actualizas',
+  };
+  const fResumenAviso = $('#f-resumen-aviso');
+  let tAviso = 0;   // el lector de pantalla oye una frase corta, no el resumen entero en cada cambio
+  const avisoResumen = t => { clearTimeout(tAviso); tAviso = setTimeout(() => { fResumenAviso.textContent = t; }, 400); };
+  const pintarResumen = () => {
+    const marcadas = $$('#f-apps input:checked').map(i => i.value);
+    fResumen.replaceChildren();
+    if (!marcadas.length) { fResumen.hidden = true; avisoResumen(''); return; }
+    const cual = limpio(fOtraCual.value).slice(0, 60);
+    const conocidas = marcadas.filter(v => QUE_HACE[v]);
+    const el = (tag, txt, cls) => { const e = document.createElement(tag); if (cls) e.className = cls; e.textContent = txt; return e; };
+    const nombres = marcadas.map(v => v === 'otra' ? (cual || 'otra') : v);
+    const lista = nombres.length > 1 ? nombres.slice(0, -1).join(', ') + ' y ' + nombres[nombres.length - 1] : nombres[0];
+    fResumen.appendChild(el('p', conocidas.length ? `Con ${lista}, tu cartera quedaría así:` : `Con ${lista}:`, 'resumen-tit'));
+    const ul = document.createElement('ul');
+    marcadas.forEach(v => {
+      const li = document.createElement('li');
+      const nom = v === 'otra' ? (cual || 'Otra') : (v === 'efectivo' ? 'Efectivo' : v);
+      const txt = QUE_HACE[v] || (v === 'Cetes' ? 'todavía no está en la app. Dímelo y lo platicamos antes de que pagues'
+        : 'la revisamos contigo antes de que pagues, para ver cómo darla de alta');
+      li.appendChild(el('strong', nom)); li.appendChild(document.createTextNode(' · ' + txt + '.'));
+      ul.appendChild(li);
+    });
+    fResumen.appendChild(ul);
+    if (conocidas.length) fResumen.appendChild(el('p', 'Y arriba de todo, la suma en un solo número, con los saldos que tú actualizas.', 'resumen-pie'));
+    fResumen.hidden = false;
+    avisoResumen(`Resumen actualizado: ${marcadas.length} ${marcadas.length === 1 ? 'opción' : 'opciones'}.`);
+  };
   // "otra" pregunta cuál: si no, el mensaje decía solo "otra"
   fOtra.addEventListener('change', () => { fOtraCampo.hidden = !fOtra.checked; if (fOtra.checked) fOtraCual.focus(); });
+  $('#f-apps').addEventListener('change', pintarResumen);
+  fOtraCual.addEventListener('change', pintarResumen);
   const armar = () => {
     const nombre = limpio(fNombre.value).slice(0, 60);
     const cual = limpio(fOtraCual.value).slice(0, 60);
@@ -33,14 +77,35 @@
     catch (e) { fEnviar.href = `https://wa.me/${WA}?text=${encodeURIComponent(t.replace(/[\uD800-\uDFFF]/g, ''))}`; }
     return nombre;
   };
-  $('#forma').addEventListener('input', () => { armar(); if (limpio(fNombre.value) && !(fOtra.checked && !limpio(fOtraCual.value))) fErr.hidden = true; });
-  // Enter en el nombre hace lo mismo que el botón (antes no hacía nada)
-  $('#forma').addEventListener('submit', e => { e.preventDefault(); fEnviar.click(); });
+  const valida = () => {
+    if (fOtra.checked && !limpio(fOtraCual.value)) return ['Escribe cuál es tu otro banco o app.', fOtraCual];
+    if (!limpio(fNombre.value)) return ['Escribe tu nombre para saber quién eres.', fNombre];
+    if (!fAcepto.checked) return ['Marca que leíste el aviso de privacidad.', fAcepto];
+    return null;
+  };
+  const marcar = campo => [fOtraCual, fNombre, fAcepto].forEach(c => c === campo ? c.setAttribute('aria-invalid', 'true') : c.removeAttribute('aria-invalid'));
+  const refrescarError = () => {
+    if (fErr.hidden) return;
+    const mal = valida();
+    if (!mal) { fErr.hidden = true; marcar(null); } else { fErr.textContent = mal[0]; marcar(mal[1]); }
+  };
+  $('#forma').addEventListener('input', () => { armar(); refrescarError(); });
+  $('#forma').addEventListener('change', refrescarError);
+  // Enter en un campo de texto hace lo mismo que el botón. El form no tiene botón submit (el envío
+  // es un enlace a WhatsApp), así que con dos campos de texto el navegador no envía solo: se hace aquí
+  [fNombre, fOtraCual].forEach(c => c.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); fEnviar.click(); } }));
+  // página de gracias: abrir WhatsApp no prueba que se mandó, así que dice "está listo", no "lo recibimos"
+  const fCampos = $('#f-campos'), fGracias = $('#f-gracias');
   fEnviar.addEventListener('click', e => {
-    if (!armar()) { e.preventDefault(); fErr.textContent = 'Escribe tu nombre para saber quién eres.'; fErr.hidden = false; fNombre.focus(); return; }
-    if (fOtra.checked && !limpio(fOtraCual.value)) { e.preventDefault(); fErr.textContent = 'Escribe cuál es tu otro banco o app.'; fErr.hidden = false; fOtraCual.focus(); }
+    armar();
+    const mal = valida();
+    if (mal) { e.preventDefault(); fErr.textContent = mal[0]; fErr.hidden = false; marcar(mal[1]); mal[1].focus(); return; }
+    marcar(null);
+    $('#f-otra-vez').href = fEnviar.href;
+    setTimeout(() => { fCampos.hidden = true; fGracias.hidden = false; $('#f-gracias-tit').focus(); window.ScrollTrigger && ScrollTrigger.refresh(); }, 0);
   });
-  armar();
+  $('#f-volver').addEventListener('click', () => { fGracias.hidden = true; fCampos.hidden = false; fNombre.focus(); });
+  armar(); pintarResumen();
 
   // ── precio: mensual o anual; al pasar a anual, confeti ──────────────
   const pMensual = $('#p-mensual'), pAnual = $('#p-anual');
@@ -303,7 +368,7 @@
   // Cada cuenta es una cápsula de vidrio que gira en una elipse inclinada. Al
   // bajar, el radio colapsa (y el giro se acelera, como un patinador que cierra
   // los brazos) hasta fundirse en el centro, donde nace el número.
-  const NOMBRES = ['Nu', 'Revolut', 'Cajita Turbo', 'Mercado Pago', 'Klar', 'Tu bolsa', 'Efectivo', 'Cetes'];
+  const NOMBRES = ['Nu', 'Revolut', 'Cajita Turbo', 'Mercado Pago', 'Klar', 'Tu bolsa', 'Efectivo', 'BBVA'];
   const svg = $('#anillos'), capaChips = $('#chips'), gRayos = $('#rayos'), gChispas = $('#chispas');
   const anA = $('#anilloA'), anB = $('#anilloB');
   const chips = NOMBRES.map((n, i) => {
@@ -585,7 +650,7 @@
     const ps = [tlHero.scrollTrigger.end, arriba($('#como'))];
     if (fijo) { for (let i = 0; i < $$('.cap').length; i++) ps.push(yCap(i)); ps.push(stGal.start + (stGal.end - stGal.start) * 0.2); }
     else { $$('.cap').forEach(c => ps.push(arriba(c) - 70)); ps.push(arriba($('.gal-arco-txt')) - 70); }
-    [$('#distinta'), $('#confianza'), $('#quien'), $('#precio'), $('#preguntas')].forEach(el => ps.push(arriba(el)));
+    [$('#distinta'), $('#confianza'), $('#quien'), $('#precio'), $('.tiempo-tit'), $('#preguntas')].forEach(el => ps.push(arriba(el)));
     ps.push(arriba($('#forma')) - 24);              // termina con el formulario completo a la vista
     return ps.map(Math.round);
   };
