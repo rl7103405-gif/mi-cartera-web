@@ -7,8 +7,8 @@
 
   // los planes van antes que el formulario: el mensaje de WhatsApp los menciona
   const PLANES = {
-    mensual: { monto: '150', per: 'al mes', nota: 'Pago mes a mes. O $120 al mes con el pago anual.', msg: 'el plan mensual ($150 al mes)' },
-    anual: { monto: '1,440', per: 'al año', nota: '$1,440 MXN en un solo pago al año: equivale a $120 al mes y ahorras $360.', msg: 'el plan anual ($1,440 al año)' },
+    mensual: { monto: '139', per: 'al mes', nota: 'Pago mes a mes. Con el pago anual, 12 meses por el precio de 10.', msg: 'el plan mensual ($139 al mes)' },
+    anual: { monto: '1,390', per: 'al año', nota: '$1,390 MXN en un solo pago al año: pagas 10 meses y usas 12, ahorras $278.', msg: 'el plan anual ($1,390 al año)' },
   };
   let plan = 'mensual', planElegido = false;
 
