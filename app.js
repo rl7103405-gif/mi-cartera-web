@@ -84,7 +84,7 @@
   const mostrar = i => {
     vIdx = (i + vLista.length) % vLista.length;
     const { src, texto } = vLista[vIdx];
-    vImg.src = src; vImg.alt = 'Pantalla de Mi Cartera: ' + texto; vTxt.textContent = texto;
+    vImg.src = src; vImg.alt = 'Pantalla de Fundview: ' + texto; vTxt.textContent = texto;
     vCuenta.textContent = pad(vIdx + 1) + ' / ' + pad(vLista.length);
     vScroll.scrollTop = 0;
   };
