@@ -8,3 +8,5 @@ node_modules/
 *.csv
 *.xlsx
 APRENDIZAJES.md
+*-debug.log
+capturas/

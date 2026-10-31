@@ -5,128 +5,71 @@
   const pad = n => String(n).padStart(2, '0');
   const html = document.documentElement;
 
-  // los planes van antes que el formulario: el mensaje de WhatsApp los menciona
-  const PLANES = {
-    mensual: { monto: '139', per: 'al mes', nota: 'Pago mes a mes. Con el pago anual, 12 meses por el precio de 10.', msg: 'el plan mensual ($139 al mes)' },
-    anual: { monto: '1,390', per: 'al año', nota: '$1,390 MXN en un solo pago al año: pagas 10 meses y usas 12, ahorras $278.', msg: 'el plan anual ($1,390 al año)' },
-  };
-  let plan = 'mensual', planElegido = false;
-
-  // ── el formulario arma el mensaje de WhatsApp (funciona con o sin animación) ──
-  const WA = '522216675776';
-  const fNombre = $('#f-nombre'), fMsg = $('#f-msg'), fErr = $('#f-error'), fEnviar = $('#f-enviar');
-  const fOtra = $('#f-app-otra'), fOtraCampo = $('#f-otra-campo'), fOtraCual = $('#f-otra-cual');
-  const limpio = s => s.replace(/\s+/g, ' ').trim();
-  const fAcepto = $('#f-acepto'), fResumen = $('#f-resumen');
-  // qué haría la app con cada institución. Condicional a propósito: marcar Nu no dice si tiene cajitas
-  const QUE_HACE = {
-    'Nu': 'tu cuenta, tus cajitas si las tienes (con lo que ganan cada día) y tu tarjeta de crédito',
-    'Revolut': 'tu cuenta y, si ahorras ahí, lo que te paga cada día ya con la retención de impuestos',
-    'Mercado Pago': 'tu saldo y, si te paga rendimiento, lo que gana cada día',
-    'Klar': 'tu saldo y, si te paga rendimiento, lo que gana cada día',
-    'BBVA': 'tu cuenta y, si la tienes, tu tarjeta de crédito',
-    'Banamex': 'tu cuenta y, si la tienes, tu tarjeta de crédito',
-    'Banorte': 'tu cuenta y, si la tienes, tu tarjeta de crédito',
-    'Santander': 'tu cuenta y, si la tienes, tu tarjeta de crédito',
-    'HSBC': 'tu cuenta y, si la tienes, tu tarjeta de crédito',
-    'GBM': 'tus acciones y lo que llevas invertido',
-    'efectivo': 'lo que traes en la mano, que tú actualizas',
-  };
-  const fResumenAviso = $('#f-resumen-aviso');
-  let tAviso = 0;   // el lector de pantalla oye una frase corta, no el resumen entero en cada cambio
-  const avisoResumen = t => { clearTimeout(tAviso); tAviso = setTimeout(() => { fResumenAviso.textContent = t; }, 400); };
-  const pintarResumen = () => {
-    const marcadas = $$('#f-apps input:checked').map(i => i.value);
-    fResumen.replaceChildren();
-    if (!marcadas.length) { fResumen.hidden = true; avisoResumen(''); return; }
-    const cual = limpio(fOtraCual.value).slice(0, 60);
-    const conocidas = marcadas.filter(v => QUE_HACE[v]);
-    const el = (tag, txt, cls) => { const e = document.createElement(tag); if (cls) e.className = cls; e.textContent = txt; return e; };
-    const nombres = marcadas.map(v => v === 'otra' ? (cual || 'otra') : v);
-    const lista = nombres.length > 1 ? nombres.slice(0, -1).join(', ') + ' y ' + nombres[nombres.length - 1] : nombres[0];
-    fResumen.appendChild(el('p', conocidas.length ? `Con ${lista}, tu cartera quedaría así:` : `Con ${lista}:`, 'resumen-tit'));
-    const ul = document.createElement('ul');
-    marcadas.forEach(v => {
-      const li = document.createElement('li');
-      const nom = v === 'otra' ? (cual || 'Otra') : (v === 'efectivo' ? 'Efectivo' : v);
-      const txt = QUE_HACE[v] || (v === 'Cetes' ? 'todavía no está en la app. Dímelo y lo platicamos antes de que pagues'
-        : 'la revisamos contigo antes de que pagues, para ver cómo darla de alta');
-      li.appendChild(el('strong', nom)); li.appendChild(document.createTextNode(' · ' + txt + '.'));
-      ul.appendChild(li);
-    });
-    fResumen.appendChild(ul);
-    if (conocidas.length) fResumen.appendChild(el('p', 'Y arriba de todo, la suma en un solo número, con los saldos que tú actualizas.', 'resumen-pie'));
-    fResumen.hidden = false;
-    avisoResumen(`Resumen actualizado: ${marcadas.length} ${marcadas.length === 1 ? 'opción' : 'opciones'}.`);
-  };
-  // "otra" pregunta cuál: si no, el mensaje decía solo "otra"
-  fOtra.addEventListener('change', () => { fOtraCampo.hidden = !fOtra.checked; if (fOtra.checked) fOtraCual.focus(); });
-  $('#f-apps').addEventListener('change', pintarResumen);
-  fOtraCual.addEventListener('change', pintarResumen);
-  const armar = () => {
-    const nombre = limpio(fNombre.value).slice(0, 60);
-    const cual = limpio(fOtraCual.value).slice(0, 60);
-    const apps = $$('#f-apps input:checked').map(i => (i === fOtra && cual) ? cual : i.value);
-    const msg = limpio(fMsg.value).slice(0, 400);
-    let t = `Hola, soy ${nombre || '—'}. Quiero mi cartera.`;
-    if (apps.length) t += `\nTengo mi dinero en: ${apps.join(', ')}.`;
-    if (planElegido) t += `\nMe interesa ${PLANES[plan].msg}.`;
-    if (msg) t += `\nMe gustaría saber: ${msg}`;
-    // un carácter pegado roto (surrogate suelto) hace tronar encodeURIComponent
-    try { fEnviar.href = `https://wa.me/${WA}?text=${encodeURIComponent(t)}`; }
-    catch (e) { fEnviar.href = `https://wa.me/${WA}?text=${encodeURIComponent(t.replace(/[\uD800-\uDFFF]/g, ''))}`; }
-    return nombre;
-  };
+  // ── lista de espera: guarda el correo (lista-espera.js); funciona con o sin animación ──
+  const fCorreo = $('#f-correo'), fAcepto = $('#f-acepto'), fErr = $('#f-error'), fEnviar = $('#f-enviar');
+  const fCampos = $('#f-campos'), fGracias = $('#f-gracias'), fTrampa = $('#f-ref');
+  const LE = window.ListaEspera;
   const valida = () => {
-    if (fOtra.checked && !limpio(fOtraCual.value)) return ['Escribe cuál es tu otro banco o app.', fOtraCual];
-    if (!limpio(fNombre.value)) return ['Escribe tu nombre para saber quién eres.', fNombre];
+    if (!LE.esValido(LE.normalizar(fCorreo.value))) return ['Escribe un correo completo, por ejemplo ana@gmail.com.', fCorreo];
     if (!fAcepto.checked) return ['Marca que leíste el aviso de privacidad.', fAcepto];
     return null;
   };
-  const marcar = campo => [fOtraCual, fNombre, fAcepto].forEach(c => c === campo ? c.setAttribute('aria-invalid', 'true') : c.removeAttribute('aria-invalid'));
+  const marcar = campo => [fCorreo, fAcepto].forEach(c => c === campo ? c.setAttribute('aria-invalid', 'true') : c.removeAttribute('aria-invalid'));
+  const mostrarError = (txt, campo) => { fErr.textContent = txt; fErr.hidden = false; marcar(campo); if (campo) campo.focus(); };
   const refrescarError = () => {
-    if (fErr.hidden) return;
+    if (fErr.hidden || !LE) return;
     const mal = valida();
     if (!mal) { fErr.hidden = true; marcar(null); } else { fErr.textContent = mal[0]; marcar(mal[1]); }
   };
-  $('#forma').addEventListener('input', () => { armar(); refrescarError(); });
+  $('#forma').addEventListener('input', refrescarError);
   $('#forma').addEventListener('change', refrescarError);
-  // Enter en un campo de texto hace lo mismo que el botón. El form no tiene botón submit (el envío
-  // es un enlace a WhatsApp), así que con dos campos de texto el navegador no envía solo: se hace aquí
-  [fNombre, fOtraCual].forEach(c => c.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); fEnviar.click(); } }));
-  // página de gracias: abrir WhatsApp no prueba que se mandó, así que dice "está listo", no "lo recibimos"
-  const fCampos = $('#f-campos'), fGracias = $('#f-gracias');
-  fEnviar.addEventListener('click', e => {
-    armar();
+  const MENSAJES = {
+    cerrada: 'La lista todavía no está abierta. Vuelve en unos días.',
+    error: 'No se pudo guardar tu correo. Revisa tu conexión e inténtalo otra vez.',
+  };
+  let enviando = false;
+  const gracias = correo => {
+    $('#f-gracias-correo').textContent = correo;
+    fCampos.hidden = true; fGracias.hidden = false; $('#f-gracias-tit').focus();
+    window.ScrollTrigger && ScrollTrigger.refresh();
+  };
+  $('#forma').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (enviando) return;
+    // si el script de la lista no cargó, no hay forma de guardar: se dice, no se queda callado
+    if (!window.ListaEspera) { mostrarError(MENSAJES.error, null); return; }
     const mal = valida();
-    if (mal) { e.preventDefault(); fErr.textContent = mal[0]; fErr.hidden = false; marcar(mal[1]); mal[1].focus(); return; }
-    marcar(null);
-    $('#f-otra-vez').href = fEnviar.href;
-    setTimeout(() => { fCampos.hidden = true; fGracias.hidden = false; $('#f-gracias-tit').focus(); window.ScrollTrigger && ScrollTrigger.refresh(); }, 0);
+    if (mal) { mostrarError(mal[0], mal[1]); return; }
+    marcar(null); fErr.hidden = true;
+    const correo = LE.normalizar(fCorreo.value);
+    // un robot que llenó el campo escondido ve el "listo" y no se guarda nada
+    if (fTrampa.value) { gracias(correo); return; }
+    enviando = true;
+    const textoBoton = fEnviar.textContent;
+    // aria-disabled (no disabled): el botón con el foco no lo pierde; el guard `enviando` impide el doble envío
+    fEnviar.setAttribute('aria-disabled', 'true'); fEnviar.setAttribute('aria-busy', 'true'); fEnviar.textContent = 'Guardando…';
+    const r = await window.ListaEspera.anotar(correo);
+    enviando = false;
+    fEnviar.removeAttribute('aria-disabled'); fEnviar.removeAttribute('aria-busy'); fEnviar.textContent = textoBoton;
+    if (r === 'ok') gracias(correo);
+    else if (r === 'invalido') mostrarError('Escribe un correo completo, por ejemplo ana@gmail.com.', fCorreo);
+    else { mostrarError(MENSAJES[r] || MENSAJES.error, null); fEnviar.focus(); }
   });
-  $('#f-volver').addEventListener('click', () => { fGracias.hidden = true; fCampos.hidden = false; fNombre.focus(); });
-  armar(); pintarResumen();
+  $('#f-volver').addEventListener('click', () => { fCorreo.value = ''; fAcepto.checked = false; fTrampa.value = ''; fGracias.hidden = true; fCampos.hidden = false; fCorreo.focus(); });
 
-  // ── precio: mensual o anual; al pasar a anual, confeti ──────────────
+  // ── precio previsto: mensual o anual ───────────────────────────────────
+  const PLANES = {
+    mensual: { monto: '139', per: 'al mes', nota: 'Mes a mes. Con el pago anual, 12 meses por el precio de 10.' },
+    anual: { monto: '1,390', per: 'al año', nota: '$1,390 MXN en un solo pago al año: pagas 10 meses y usas 12, ahorras $278.' },
+  };
   const pMensual = $('#p-mensual'), pAnual = $('#p-anual');
-  // sin worker: por defecto el confeti arranca un worker desde un blob, que la CSP no permite
-  const lanzarConfeti = window.confetti ? window.confetti.create(null, { resize: true, useWorker: false }) : null;
-  const ponerPlan = (p, festejo) => {
-    plan = p; planElegido = true;
+  const ponerPlan = p => {
     pMensual.setAttribute('aria-pressed', String(p === 'mensual'));
     pAnual.setAttribute('aria-pressed', String(p === 'anual'));
     $('#p-monto').textContent = PLANES[p].monto; $('#p-per').textContent = PLANES[p].per; $('#p-nota').textContent = PLANES[p].nota;
-    armar();
-    if (festejo && lanzarConfeti && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      const k = pAnual.getBoundingClientRect();
-      lanzarConfeti({ particleCount: 110, spread: 75, startVelocity: 38, ticks: 200, scalar: 0.95, zIndex: 95,
-        origin: { x: (k.left + k.width / 2) / innerWidth, y: (k.top + k.height / 2) / innerHeight },
-        colors: ['#a7d8b8', '#e8ebe3', '#d7b36a', '#2f6f4f'] });
-    }
   };
-  pMensual.addEventListener('click', () => ponerPlan('mensual', false));
-  pAnual.addEventListener('click', () => ponerPlan('anual', plan !== 'anual'));
-  $('#p-cta').addEventListener('click', () => { planElegido = true; armar(); });
+  pMensual.addEventListener('click', () => ponerPlan('mensual'));
+  pAnual.addEventListener('click', () => ponerPlan('anual'));
 
   // ── el visor: cualquier pantalla en grande (funciona con o sin animación) ──
   const reducido = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -581,15 +524,15 @@
   // llega apenas se va el texto, sin una pantalla vacía de por medio.
   const tlHero = gsap.timeline({ scrollTrigger: { trigger: '.hero', start: 'top top', end: fijo ? '+=110%' : '+=70%', scrub: 1, pin: true } });
   tlHero
-    .to('.hero-centro', { y: -50, opacity: 0, filter: 'blur(10px)', duration: 0.22, ease: 'power1.in' }, 0.14)
+    .to('.hero-centro', { y: -50, opacity: 0, duration: 0.22, ease: 'power1.in' }, 0.14)
     .to('.hero-capa', { opacity: 0, duration: 0.2 }, 0.1)
     .to(orb, { r: 0, duration: 0.4, ease: 'power2.in' }, 0.08)
     .to(orb, { rayos: 1, duration: 0.14, ease: 'none' }, 0.14)
     .to(orb, { rayos: 0, duration: 0.12, ease: 'none' }, 0.34)
     .fromTo('.destello', { scale: 0.15, opacity: 0 }, { scale: 1.35, opacity: 1, duration: 0.1, ease: 'power2.out' }, 0.38)
     .to('.destello', { scale: 1, opacity: 0.3, duration: 0.2, ease: 'power1.out' }, 0.48)
-    .fromTo('.numero-wrap', { opacity: 0, scale: 0.9, filter: 'blur(16px)' },
-                            { opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.16, ease: 'power2.out' }, 0.38)
+    .fromTo('.numero-wrap', { opacity: 0, scale: 0.96 },
+                            { opacity: 1, scale: 1, duration: 0.16, ease: 'power2.out' }, 0.38)
     .fromTo(cuenta, { v: 0 }, { v: 204697.58, duration: 0.28, ease: 'power3.out', onUpdate: pintarNumero }, 0.38)
     .to('#ganado', { opacity: 1, duration: 0.1 }, 0.62)
     .to({}, { duration: 0.24 });                     // el número se queda quieto para leerlo
@@ -601,13 +544,12 @@
         onLeave: () => gsap.set('.t-entrada', { clearProps: 'transform' }) } })
       .fromTo('.t-entrada', { y: () => innerHeight * 0.45, rotateX: 26, opacity: 0.2 },
                             { y: 0, rotateX: 0, opacity: 1, ease: 'none', duration: 1 }, 0)
-      .to('.numero-in', { y: () => -innerHeight * 0.14, opacity: 0, filter: 'blur(12px)', ease: 'power1.in', duration: 0.55 }, 0);
+      .to('.numero-in', { y: () => -innerHeight * 0.14, opacity: 0, ease: 'power1.in', duration: 0.55 }, 0);
 
     // ── capítulos: el teléfono se queda y cambia de pantalla ────────────
-    const caps = $$('.cap'), scrs = $$('.scr'), barra = $('#barraCaps'), esc = $('#escaner'), tabs = $$('.cap-tab'), N = caps.length;
+    const caps = $$('.cap'), scrs = $$('.scr'), barra = $('#barraCaps'), tabs = $$('.cap-tab'), N = caps.length;
     gsap.set(caps.slice(1), { opacity: 0 });
     gsap.set(scrs.slice(1), { opacity: 0 });
-    gsap.set(esc, { opacity: 0 });
     const marcar = i => tabs.forEach((t, k) => t.setAttribute('aria-current', String(k === i)));
     // La pestaña activa (y el visor, que abre la pantalla del capítulo actual) lee el
     // tiempo de la línea, no el scroll: con scrub la línea va detrás del scroll.
@@ -621,12 +563,10 @@
     tlCaps.to({}, { duration: N }, 0);           // el teléfono no gira: plano se lee nítido
     for (let i = 1; i < N; i++) {
       tlCaps
-        .to(caps[i - 1], { opacity: 0, y: -24, filter: 'blur(4px)', duration: 0.26, ease: 'power2.in' }, i)
-        .fromTo(caps[i], { opacity: 0, y: 28, filter: 'blur(4px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.36, ease: 'power2.out' }, i + 0.26)
+        .to(caps[i - 1], { opacity: 0, y: -16, duration: 0.26, ease: 'power2.in' }, i)
+        .fromTo(caps[i], { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.36, ease: 'power2.out' }, i + 0.26)
         .to(scrs[i - 1], { opacity: 0, scale: 0.97, duration: 0.4, ease: 'power2.in' }, i)
-        .fromTo(scrs[i], { opacity: 0, yPercent: 7, scale: 1.03 }, { opacity: 1, yPercent: 0, scale: 1, duration: 0.5, ease: 'power3.out' }, i + 0.12)
-        .fromTo(esc, { top: '-6%', opacity: 1 }, { top: '104%', opacity: 0.2, duration: 0.55, ease: 'power1.inOut', immediateRender: false }, i + 0.08)
-        .set(esc, { opacity: 0 }, i + 0.64);
+        .fromTo(scrs[i], { opacity: 0 }, { opacity: 1, duration: 0.5, ease: 'power2.out' }, i + 0.12);
     }
     stCaps = tlCaps.scrollTrigger;
     // cada pestaña lleva a donde su capítulo ya se ve completo
@@ -650,19 +590,11 @@
     const ps = [tlHero.scrollTrigger.end, arriba($('#como'))];
     if (fijo) { for (let i = 0; i < $$('.cap').length; i++) ps.push(yCap(i)); ps.push(stGal.start + (stGal.end - stGal.start) * 0.2); }
     else { $$('.cap').forEach(c => ps.push(arriba(c) - 70)); ps.push(arriba($('.gal-arco-txt')) - 70); }
-    [$('#distinta'), $('#confianza'), $('#quien'), $('#precio'), $('.tiempo-tit'), $('#preguntas')].forEach(el => ps.push(arriba(el)));
+    [$('#distinta'), $('#confianza'), $('#quien'), $('#precio'), $('#preguntas')].forEach(el => ps.push(arriba(el)));
     ps.push(arriba($('#forma')) - 24);              // termina con el formulario completo a la vista
     return ps.map(Math.round);
   };
   ScrollTrigger.addEventListener('refresh', revisarSig);
-
-  // luz tenue que sigue al mouse (solo en computadora)
-  if (fino) {
-    const lx = gsap.quickTo('.luz-cursor', 'x', { duration: 0.9, ease: 'power3' });
-    const ly = gsap.quickTo('.luz-cursor', 'y', { duration: 0.9, ease: 'power3' });
-    const luz = $('.luz-cursor');
-    addEventListener('pointermove', e => { lx(e.clientX); ly(e.clientY); luz.style.opacity = 1; }, { passive: true });
-  }
 
   // ── la frase se enciende palabra por palabra ──────────────────────────
   const frase = $('#frase');
@@ -685,16 +617,13 @@
     scrollTrigger: { trigger: frase, start: 'top 92%', end: 'top 45%', scrub: true,
       onLeave(self) { self.kill(); gsap.set(palabras, { opacity: 1 }); } } });
 
-  // ── apariciones con desenfoque ────────────────────────────────────────
+  // ── apariciones: entrada corta y quieta, sin desenfoque (Beto: "es demasiado movimiento") ──
   gsap.set('[data-rev]', { opacity: 0 });
   ScrollTrigger.batch('[data-rev]', { start: 'top 90%', once: true,
-    onEnter: lote => gsap.fromTo(lote, { opacity: 0, y: 44, filter: 'blur(10px)' },
-      { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1.3, ease: 'expo.out', stagger: 0.1, clearProps: 'filter,opacity,transform' }) });
+    onEnter: lote => gsap.fromTo(lote, { opacity: 0, y: 12 },
+      { opacity: 1, y: 0, duration: 0.6, ease: 'power2.out', stagger: 0.06, clearProps: 'opacity,transform' }) });
 
 
-  // ── el nombre gigante del pie sube despacio ───────────────────────────
-  gsap.fromTo('.pie-gigante', { yPercent: 45 }, { yPercent: 0, ease: 'none',
-    scrollTrigger: { trigger: '.pie', start: 'top bottom', end: 'bottom bottom', scrub: true } });
 
   // ── barra de progreso + la cápsula se esconde al bajar ────────────────
   const prog = $('.progreso i'), nav = $('#nav');

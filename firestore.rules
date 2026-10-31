@@ -1,0 +1,33 @@
+rules_version = '2';
+// Lista de espera de la landing (proyecto de Firebase NUEVO, no mi-cartera-b43e0).
+// Desde fuera solo se puede ANOTARSE: nadie puede leer, listar, cambiar ni borrar la lista.
+// La lista se lee solo desde la consola de Firebase (o con una cuenta de servicio).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // El id lo pone la pagina al azar (64 hex). No es el hash del correo a proposito: con el hash,
+    // cualquiera podria averiguar si un correo esta anotado. Los repetidos se limpian al bajar la lista.
+    match /lista_espera/{id} {
+      allow create: if id.matches('^[a-f0-9]{64}$') && altaValida(request.resource.data);
+      allow read, update, delete: if false;
+    }
+
+    // Todo lo demas, cerrado.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // El correo empieza con letra o numero: uno que empiece con + o - Excel lo lee como formula.
+    // Exactamente tres campos: el correo (minusculas, formato y tamano), el consentimiento del aviso
+    // de privacidad y la hora del servidor (no la del navegador, que se puede falsear).
+    function altaValida(d) {
+      return d.keys().hasOnly(['correo', 'acepto', 'creado'])
+        && d.keys().hasAll(['correo', 'acepto', 'creado'])
+        && d.correo is string
+        && d.correo.size() >= 6 && d.correo.size() <= 254
+        && d.correo.matches('^[a-z0-9][a-z0-9._%+-]*@[a-z0-9-]+([.][a-z0-9-]+)*[.][a-z]{2,24}$')
+        && d.acepto == true
+        && d.creado == request.time;
+    }
+  }
+}

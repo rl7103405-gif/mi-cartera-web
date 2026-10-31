@@ -213,9 +213,6 @@ h1,h2,h3{text-wrap:balance}
   66%{transform:translate3d(-3vw,4vh,0) scale(.94)}}
 .grano{position:absolute;inset:0;opacity:.09;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
-.luz-cursor{position:fixed;left:0;top:0;width:620px;height:620px;margin:-310px 0 0 -310px;border-radius:50%;
-  background:radial-gradient(closest-side,rgba(167,216,184,.085),rgba(167,216,184,0));
-  pointer-events:none;z-index:1;opacity:0;transition:opacity .8s}
 main{position:relative;z-index:2}
 
 .marca span{color:var(--acento)}
@@ -387,9 +384,6 @@ main{position:relative;z-index:2}
 .scr{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
 .scr+.scr{display:none}
 .fijo .scr+.scr{display:block;opacity:0}
-.escaner{display:none}
-.fijo .escaner{display:block;position:absolute;left:0;right:0;top:-6%;height:70px;margin-top:-35px;pointer-events:none;z-index:2;
-  background:linear-gradient(to bottom,rgba(167,216,184,0),rgba(167,216,184,.45) 49%,rgba(47,111,79,.7) 50%,rgba(167,216,184,.45) 51%,rgba(167,216,184,0))}
 .reflejo{position:absolute;inset:11px;border-radius:40px;pointer-events:none;
   background:linear-gradient(118deg,rgba(255,255,255,.2) 0%,rgba(255,255,255,0) 30%,rgba(255,255,255,0) 72%,rgba(255,255,255,.06) 100%)}
 .nota-ejemplo{position:absolute;bottom:40px;left:0;right:0;margin:0;text-align:center;color:var(--gris-2)}
@@ -559,7 +553,7 @@ main{position:relative;z-index:2}
   .garantia,.garantia+.garantia{padding:26px 0;border-left:0}
   .garantia+.garantia{border-top:1px solid var(--linea)} }
 
-/* 6 · el lugar: formulario de vidrio que arma el WhatsApp */
+/* 6 · el lugar: formulario de vidrio de la lista de espera */
 .cta{min-height:100vh;min-height:100svh;display:flex;align-items:center;overflow:hidden}
 /* los campos no quedan debajo del menú fijo al enfocarlos */
 .forma input,.forma textarea{scroll-margin-top:120px}
@@ -570,20 +564,11 @@ main{position:relative;z-index:2}
 .forma{position:relative;z-index:1;border-radius:34px;padding:clamp(24px,3vw,38px);display:flex;flex-direction:column;gap:26px;
   --desenfoque:16px;--tinte:rgba(20,28,22,.28)}
 .campo{display:flex;flex-direction:column;gap:12px;border:0;min-width:0}
-.campo .mono i{font-style:normal;text-transform:none;letter-spacing:.02em;color:var(--gris-2)}
-.forma input[type=text],.forma textarea{width:100%;font:inherit;font-size:17px;color:var(--hueso);background:transparent;border:0;
+.forma input[type=text],.forma input[type=email],.forma textarea{width:100%;font:inherit;font-size:17px;   /* 16 px o más: si no, el iPhone hace zoom al tocar */color:var(--hueso);background:transparent;border:0;
   border-bottom:1px solid rgba(232,235,227,.22);padding:8px 0 10px;border-radius:0;resize:none;transition:border-color .3s}
 .forma textarea{font-size:16px;line-height:1.5}   /* 16 px o más: si no, el iPhone hace zoom al tocar */
 .forma input::placeholder,.forma textarea::placeholder{color:var(--gris-2)}
-.forma input[type=text]:focus,.forma textarea:focus{outline:none;border-bottom-color:var(--acento)}
-.opciones{display:flex;flex-wrap:wrap;gap:8px}
-.op{position:relative;cursor:pointer}
-.op input{position:absolute;opacity:0;pointer-events:none}
-.op span{min-height:44px;display:inline-flex;align-items:center;height:40px;padding:0 15px;border-radius:999px;font-size:13.5px;color:var(--gris);
-  border:1px solid rgba(232,235,227,.16);transition:color .25s,background .25s,border-color .25s,box-shadow .25s}
-.op:hover span{color:var(--hueso);border-color:rgba(232,235,227,.3)}
-.op input:checked+span{color:var(--hueso);background:rgba(167,216,184,.14);border-color:transparent;box-shadow:var(--borde-vidrio-suave)}
-.op input:focus-visible+span{outline:2px solid var(--acento);outline-offset:2px}
+.forma input[type=text]:focus,.forma input[type=email]:focus,.forma textarea:focus{outline:none;border-bottom-color:var(--acento)}
 .error{color:#f0b3a6;font-size:14px;margin-top:-12px}
 .liquido.grande{height:58px;padding:0 28px;font-size:16px;align-self:stretch;--tinte:rgba(167,216,184,.2)}
 .nota-forma{font-size:12.5px;line-height:1.6;color:var(--gris-2)}
@@ -604,14 +589,7 @@ main{position:relative;z-index:2}
 .svg-filtros{position:absolute}
 .legend-apps{margin-bottom:12px}
 
-/* ── bloque A (2-oct-2026): formulario al revés, resumen, gracias, condiciones y tiempo ── */
-.campo-ayuda{margin-top:-4px;color:var(--gris);font-size:14px}
-.resumen{border-top:1px solid var(--linea);padding-top:18px;color:var(--hueso);font-size:15.5px;line-height:1.55}
-.resumen-tit{font-weight:500;margin-bottom:10px}
-.resumen ul{list-style:none;display:flex;flex-direction:column;gap:8px;margin:0;padding:0}
-.resumen li{color:var(--gris)}
-.resumen li strong{color:var(--hueso);font-weight:500}
-.resumen-pie{margin-top:12px;color:var(--gris)}
+/* ── bloque A (2-oct-2026): consentimiento, gracias y condiciones ── */
 .acepto{display:flex;align-items:center;gap:12px;min-height:44px;color:var(--gris);font-size:15px;cursor:pointer}
 .acepto input{width:20px;height:20px;accent-color:var(--acento);flex:none}
 .acepto a,.plan-pie a,.plan-condiciones a,.garantia a,.preguntas a,.pie-links a{color:var(--hueso);text-decoration:underline;text-underline-offset:3px}
@@ -622,10 +600,13 @@ main{position:relative;z-index:2}
 .gracias .boton-texto{align-self:flex-start;min-height:44px}
 .plan-condiciones{margin-top:16px;color:var(--gris);font-size:14px;line-height:1.6}
 .plan-condiciones strong{color:var(--hueso);font-weight:500}
-.tiempo-tit{margin-top:clamp(56px,7vw,96px);font-family:var(--display);font-weight:500;font-size:clamp(24px,2.2vw,32px);letter-spacing:-.02em}
 .pasos.cuatro{grid-template-columns:repeat(4,1fr);margin-top:28px}
 @media (max-width:900px){ .pasos.cuatro{grid-template-columns:1fr} }
 .pie-links{display:flex;gap:18px;flex-wrap:wrap}
+/* la trampa para robots: fuera de la pantalla (no display:none, que algunos robots saltan) */
+.trampa{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+.forma .liquido[aria-busy=true]{cursor:progress}   /* sin bajar la opacidad: rompe el vidrio (ver LEEME) */
+.forma .liquido[aria-disabled=true]{cursor:progress}
 .solo-lector{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .forma-campos{display:flex;flex-direction:column;gap:26px}
 .forma-campos[hidden],.gracias[hidden]{display:none}

@@ -7,7 +7,7 @@
 <meta name="description" content="Tus cuentas, cajitas e inversiones en una sola pantalla, con tu patrimonio total y lo que has ganado. Sin pedirte la contraseña de tu banco.">
 <meta name="theme-color" content="#0c100d">
 <!-- seguridad: solo archivos de este sitio; sin scripts ni estilos en línea -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'none'; worker-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src https://firestore.googleapis.com; worker-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- que los buscadores no la indexen todavía -->
 <meta name="robots" content="noindex, nofollow">
@@ -29,7 +29,6 @@
 <svg class="svg-filtros" width="0" height="0" aria-hidden="true" focusable="false"><defs id="filtros-vidrio"></defs></svg>
 
 <div class="ambiente" aria-hidden="true"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="grano"></div></div>
-<div class="luz-cursor" aria-hidden="true"></div>
 <div class="progreso" aria-hidden="true"><i></i></div>
 
 <header class="nav vidrio" id="nav">
@@ -40,7 +39,7 @@
     <a href="#precio">Precio</a>
     <a href="#preguntas">Preguntas</a>
   </nav>
-  <a class="liquido vidrio" href="#lugar">Empezar</a>
+  <a class="liquido vidrio" href="#lugar">Lista de espera</a>
   <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="menu-panel" aria-label="Abrir el menú"><span></span><span></span></button>
 </header>
 <nav class="menu-panel vidrio" id="menu-panel" aria-label="Menú" hidden>
@@ -49,7 +48,7 @@
   <a href="#todo">Todo lo que hace</a>
   <a href="#precio">Precio</a>
   <a href="#preguntas">Preguntas</a>
-  <a href="#lugar">Quiero mi cartera</a>
+  <a href="#lugar">Anotarme en la lista</a>
 </nav>
 
 <main>
@@ -79,10 +78,10 @@
       </h1>
       <p class="hero-sub"><span>Abres Nu, el banco, tus cajitas y tus inversiones, cuentas el efectivo, y aun así no sabes el total ni cuánto te paga de verdad cada cuenta. Mi Cartera lo junta en un solo número. Tú actualizas tus saldos; ella calcula cuánto te paga cada cuenta, sin conectarse a tu banco.</span></p>
       <div class="hero-ctas">
-        <a class="liquido vidrio medio" href="#lugar">Quiero mi cartera</a>
+        <a class="liquido vidrio medio" href="#lugar">Anotarme en la lista</a>
         <a class="boton-texto" href="#como">Cómo funciona ↓</a>
       </div>
-      <p class="hero-precio">$139 al mes · Damos de alta tus cuentas contigo</p>
+      <p class="hero-precio">Abrimos por invitación · Precio previsto: $139 al mes</p>
     </div>
 
     <div class="numero-wrap">
@@ -121,8 +120,8 @@
     <span class="kicker mono" data-rev>Cómo funciona</span>
     <h2 class="titulo-grande" data-rev>Tres pasos y <em>listo</em>.</h2>
     <ol class="pasos">
-      <li class="paso" data-rev><span class="n">1</span><h3>Te la dejamos lista</h3>
-        <p>Nos dices dónde tienes tu dinero y nosotros damos de alta tus cuentas. No tienes que configurar nada.</p></li>
+      <li class="paso" data-rev><span class="n">1</span><h3>Das de alta tus cuentas</h3>
+        <p>Al entrar, un asistente te pregunta dónde tienes tu dinero y arma tu cartera. No hay nada más que configurar.</p></li>
       <li class="paso" data-rev><span class="n">2</span><h3>Tú decides qué tanto llevar</h3>
         <p>Puedes registrar cada gasto para ver tu mes completo, o solo actualizar tus saldos si lo que quieres es seguir tu patrimonio y tus rendimientos. La app nunca entra a tu banco.</p></li>
       <li class="paso" data-rev><span class="n">3</span><h3>Ves cuánto tienes y cuánto ganas</h3>
@@ -175,7 +174,6 @@
                 <img class="scr" src="assets/grandes/01.webp" alt="Inicio de Mi Cartera con el total de una cartera de ejemplo">
                 <img class="scr" src="assets/grandes/03.webp" alt="Cuentas con su rendimiento por tramos" loading="lazy">
                 <img class="scr" src="assets/grandes/13.webp" alt="Resumen y cierre del mes" loading="lazy">
-                <div class="escaner" id="escaner" aria-hidden="true"></div>
               </div>
             </div>
             <div class="reflejo"></div>
@@ -208,7 +206,7 @@
   <section class="seccion" id="quien">
     <span class="kicker mono" data-rev>Quién está detrás</span>
     <h2 class="titulo-grande" data-rev>La hice porque yo tenía este <em>problema</em>.</h2>
-    <p class="lead" data-rev>Tenía mi dinero repartido entre Nu, Revolut, cajitas, inversiones y efectivo, y no sabía cuánto tenía en total ni cuánto me pagaba realmente cada lugar. La construí para mí y la uso todos los días; hoy también la usan unas pocas personas cercanas. Ahora la estoy abriendo a los primeros diez.</p>
+    <p class="lead" data-rev>Tenía mi dinero repartido entre Nu, Revolut, cajitas, inversiones y efectivo, y no sabía cuánto tenía en total ni cuánto me pagaba realmente cada lugar. La construí para mí y la uso todos los días; hoy también la usan unas pocas personas cercanas. Ahora estoy preparando la versión para que la use cualquiera.</p>
     <p class="firma" data-rev>Roberto Linares <span class="mono">· WhatsApp <a href="https://wa.me/522216675776" target="_blank" rel="noopener">221 667 5776</a></span></p>
   </section>
 
@@ -216,42 +214,31 @@
   <section class="seccion" id="precio">
     <div class="precio-grid">
       <div class="precio-txt">
-        <span class="kicker mono" data-rev>Precio</span>
+        <span class="kicker mono" data-rev>Precio previsto</span>
         <h2 class="titulo-grande" data-rev>Un solo plan, <em>todo incluido</em>.</h2>
-        <p data-rev>Sin niveles ni letras chiquitas: pagas lo mismo con dos cuentas o con diez. Con el pago anual, dos meses te salen gratis.</p>
+        <p data-rev>Sin niveles ni letras chiquitas: el plan previsto cuesta lo mismo con dos cuentas o con diez, y con el pago anual dos meses salen gratis. Anotarte en la lista no cuesta nada ni te compromete a pagar.</p>
       </div>
       <div class="plan vidrio" data-rev>
-        <div class="plan-toggle" role="group" aria-label="Forma de pago">
+        <div class="plan-toggle" role="group" aria-label="Periodo de pago previsto">
           <button type="button" id="p-mensual" aria-pressed="true">Mensual</button>
           <button type="button" id="p-anual" aria-pressed="false">Anual <span class="ahorro">2 meses gratis</span></button>
         </div>
         <div class="plan-precio"><span class="signo">$</span><span id="p-monto">139</span><span class="per" id="p-per">al mes</span></div>
-        <p class="plan-nota" id="p-nota" aria-live="polite">Pago mes a mes. Con el pago anual, 12 meses por el precio de 10.</p>
-        <p class="plan-valor">Pagas por ver todo tu patrimonio en un solo lugar, con tus rendimientos calculados sin hacer cuentas y la app configurada contigo.</p>
+        <p class="plan-nota" id="p-nota" aria-live="polite">Mes a mes. Con el pago anual, 12 meses por el precio de 10.</p>
+        <p class="plan-valor">Pagarías por ver todo tu patrimonio en un solo lugar, con tus rendimientos calculados sin hacer cuentas y la app configurada contigo.</p>
         <ul class="plan-lista">
           <li>Todas tus cuentas, cajitas, tarjetas e inversiones</li>
           <li>Lo que ganan tus cajitas, calculado día por día</li>
           <li>Suscripciones con aviso el día que tocan</li>
           <li>Resumen del mes, metas, deudas y fondos aparte</li>
-          <li>Damos de alta tus cuentas contigo</li>
+          <li>Un asistente que arma tu cartera contigo</li>
           <li>Ayuda por WhatsApp</li>
         </ul>
-        <a class="liquido vidrio grande" href="#lugar" id="p-cta">Quiero mi cartera</a>
-        <p class="plan-condiciones">Pagas por transferencia (SPEI): no guardamos tu tarjeta ni cobramos solos. <strong>Se renueva solo si vuelves a pagar</strong>, y tres días antes te aviso por WhatsApp. <strong>Cancelar es un WhatsApp o un correo</strong>, igual que contratar, y te llevas un Excel con toda tu información.</p>
-        <p class="plan-pie">Precios en pesos mexicanos. <a href="legal.html#condiciones">Condiciones</a> · <a href="legal.html#aviso">Aviso de privacidad</a></p>
+        <a class="liquido vidrio grande" href="#lugar" id="p-cta">Anotarme en la lista</a>
+        <p class="plan-condiciones">Es el precio que tenemos previsto para cuando abra; puede cambiar, y te lo diremos antes de que pagues nada. Si cancelas, te llevas un Excel con toda tu información.</p>
+        <p class="plan-pie">Precios en pesos mexicanos. <a href="legal.html#aviso">Aviso de privacidad</a></p>
       </div>
     </div>
-    <h3 class="tiempo-tit" data-rev>Qué pasa cuando pagas</h3>
-    <ol class="pasos cuatro tiempo">
-      <li class="paso" data-rev><span class="n">0</span><h3>Revisamos y pagas</h3>
-        <p>Primero vemos juntos que tus bancos y apps se puedan dar de alta. Después pagas por transferencia.</p></li>
-      <li class="paso" data-rev><span class="n">3</span><h3>En máximo 3 días</h3>
-        <p>Te dejo la app instalada, contigo, con tus cuentas dadas de alta.</p></li>
-      <li class="paso" data-rev><span class="n">7</span><h3>La primera semana</h3>
-        <p>Te acompaño por WhatsApp con las dudas del arranque. Después la ayuda sigue por el mismo medio.</p></li>
-      <li class="paso" data-rev><span class="n">30</span><h3>Antes de renovar</h3>
-        <p>Tres días antes te aviso por WhatsApp. Renuevas pagando otra vez, o cancelas y te llevas un Excel con toda tu información.</p></li>
-    </ol>
   </section>
 
   <!-- 5c · todo lo que hace -->
@@ -284,13 +271,13 @@
       <details><summary>¿En qué celular funciona?</summary>
         <p>En cualquiera: iPhone, Android o computadora. Es una app web: se abre desde el navegador y se agrega a la pantalla de inicio como cualquier otra app. No se descarga de ninguna tienda.</p></details>
       <details><summary>¿Cuánto tiempo me va a tomar?</summary>
-        <p>La configuración la hacemos nosotros, contigo. Después, registrar un gasto toma unos segundos.</p></details>
-      <details><summary>¿Cómo se renueva?</summary>
-        <p>No hay cobros automáticos: pagas por transferencia cada mes o cada año. Tres días antes de que se cumpla te aviso por WhatsApp. Si no vuelves a pagar, simplemente no se renueva.</p></details>
-      <details><summary>¿Y si me quiero salir?</summary>
-        <p>Me mandas un WhatsApp o un correo, igual que para contratar. No se renueva, la app sigue funcionando hasta que termine lo que ya pagaste, te llevas un Excel con toda tu información y borramos tu cuenta y tus datos (solo se guardan los comprobantes de pago, el tiempo que pide la ley fiscal).</p></details>
+        <p>Unos minutos al principio, con el asistente. Después, registrar un gasto toma unos segundos.</p></details>
+      <details><summary>¿Cuándo abre?</summary>
+        <p>Estamos terminando la versión para que la use cualquiera. Abrimos por invitación, en el orden de la lista, y te escribimos al correo que dejes. No te vamos a mandar nada más.</p></details>
+      <details><summary>¿Anotarme me compromete a algo?</summary>
+        <p>No. Anotarte no cuesta nada y no te obliga a pagar. Cuando te toque decides si entras. Si ya no quieres estar en la lista, escríbenos y te borramos.</p></details>
       <details><summary>¿Alguien de Mi Cartera puede ver mis saldos?</summary>
-        <p>Solo tú inicias sesión en tu cuenta. Nadie entra a revisar tus datos: los tocamos únicamente para instalarte la app, para cargar tus estados de cuenta si tú lo pides y para darte soporte cuando nos lo pides. Por cómo funciona hoy la app, el administrador tiene acceso técnico a la base de datos (vive en Firebase, de Google), y por eso lo decimos claro. No vendemos tus datos ni los usamos para nada más. El detalle está en el <a href="legal.html#aviso">aviso de privacidad</a>.</p></details>
+        <p>En la versión de hoy, que usan unas pocas personas cercanas, el administrador tiene acceso técnico a la base de datos, y por eso lo decimos claro. La versión para todos la estamos construyendo para que tus datos se cifren en tu teléfono antes de guardarse, de modo que nadie más, ni nosotros, pueda leer tus saldos desde la base de datos. Cuando abra, su aviso de privacidad lo explicará con detalle. No vendemos tus datos ni los usamos para nada más.</p></details>
     </div>
   </section>
 
@@ -298,49 +285,25 @@
   <section class="seccion cta" id="lugar">
     <div class="cta-grid">
       <div class="cta-txt">
-        <span class="kicker mono" data-rev>Por ahora</span>
-        <h2 class="titulo-grande" data-rev>La estamos abriendo a <em>diez</em> personas.</h2>
-        <p data-rev>Damos de alta tus cuentas contigo y te entregamos la app lista. Después solo registras tus gastos y tus saldos; lo demás lo calcula la app. Contesta estas preguntas y se arma tu mensaje para WhatsApp.</p>
+        <span class="kicker mono" data-rev>Lista de espera</span>
+        <h2 class="titulo-grande" data-rev>Te avisamos cuando <em>abra</em>.</h2>
+        <p data-rev>Estamos terminando la versión para que la use cualquiera. Déjanos tu correo y te escribimos cuando sea tu turno. Anotarte no cuesta nada ni te compromete a pagar.</p>
       </div>
       <form class="forma vidrio" id="forma" data-rev novalidate>
         <div class="forma-campos" id="f-campos">
-        <fieldset class="campo"><legend class="mono legend-apps">¿Dónde tienes tu dinero hoy?</legend>
-          <p class="campo-ayuda">Marca todas las que uses.</p>
-          <div class="opciones" id="f-apps">
-            <label class="op"><input type="checkbox" id="f-app-nu" value="Nu"><span>Nu</span></label>
-            <label class="op"><input type="checkbox" id="f-app-revolut" value="Revolut"><span>Revolut</span></label>
-            <label class="op"><input type="checkbox" id="f-app-mp" value="Mercado Pago"><span>Mercado Pago</span></label>
-            <label class="op"><input type="checkbox" id="f-app-bbva" value="BBVA"><span>BBVA</span></label>
-            <label class="op"><input type="checkbox" id="f-app-banamex" value="Banamex"><span>Banamex</span></label>
-            <label class="op"><input type="checkbox" id="f-app-banorte" value="Banorte"><span>Banorte</span></label>
-            <label class="op"><input type="checkbox" id="f-app-santander" value="Santander"><span>Santander</span></label>
-            <label class="op"><input type="checkbox" id="f-app-hsbc" value="HSBC"><span>HSBC</span></label>
-            <label class="op"><input type="checkbox" id="f-app-klar" value="Klar"><span>Klar</span></label>
-            <label class="op"><input type="checkbox" id="f-app-gbm" value="GBM"><span>GBM</span></label>
-            <label class="op"><input type="checkbox" id="f-app-cetes" value="Cetes"><span>Cetes</span></label>
-            <label class="op"><input type="checkbox" id="f-app-efectivo" value="efectivo"><span>Efectivo</span></label>
-            <label class="op"><input type="checkbox" id="f-app-otra" value="otra"><span>Otra</span></label>
-          </div></fieldset>
-        <label class="campo" for="f-otra-cual" id="f-otra-campo" hidden><span class="mono">¿Cuál otra?</span>
-          <input type="text" id="f-otra-cual" name="otra" maxlength="60" placeholder="Por ejemplo: Scotiabank, Hey Banco"></label>
-        <label class="campo" for="f-msg"><span class="mono">¿Qué te gustaría saber de tu dinero? <i>(opcional)</i></span>
-          <textarea id="f-msg" name="mensaje" maxlength="400" rows="2" placeholder="Por ejemplo: cuánto rinden realmente mis cajitas"></textarea></label>
-        <div class="resumen" id="f-resumen" hidden></div>
-        <p class="solo-lector" id="f-resumen-aviso" aria-live="polite"></p>
-        <label class="campo" for="f-nombre"><span class="mono">¿Cómo te llamas?</span>
-          <input type="text" id="f-nombre" name="nombre" autocomplete="given-name" maxlength="60" placeholder="Nombre" required aria-describedby="f-error"></label>
-        <label class="acepto" for="f-acepto"><input type="checkbox" id="f-acepto" aria-describedby="f-error"><span>Leí el <a href="legal.html#aviso" target="_blank" rel="noopener">aviso de privacidad</a>.</span></label>
-        <p class="error" id="f-error" role="alert" hidden>Escribe tu nombre para saber quién eres.</p>
-        <a class="liquido vidrio grande" id="f-enviar" href="https://wa.me/522216675776" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.5L3 21l2-5.6A8.4 8.4 0 1 1 21 11.5Z"/></svg>
-          Armar mi mensaje en WhatsApp</a>
-        <p class="nota-forma">Lo que escribes aquí no se guarda en esta página: se arma el mensaje y se abre WhatsApp, donde tú decides si lo mandas. Como cualquier página, el servidor que la publica (GitHub) registra tu dirección IP por seguridad. No escribas contraseñas ni datos de tus cuentas. También puedes escribir directo al <a href="https://wa.me/522216675776" target="_blank" rel="noopener">221 667 5776</a>.</p>
+        <label class="campo" for="f-correo"><span class="mono">Tu correo</span>
+          <input type="email" id="f-correo" name="correo" autocomplete="email" inputmode="email" maxlength="254" placeholder="tu@correo.com" required aria-describedby="f-error"></label>
+        <!-- trampa para robots: una persona no la ve ni la llena -->
+        <div class="trampa" aria-hidden="true"><label for="f-ref">Déjalo vacío</label><input type="text" id="f-ref" name="ref_x7" tabindex="-1" autocomplete="off"></div>
+        <label class="acepto" for="f-acepto"><input type="checkbox" id="f-acepto" aria-describedby="f-error"><span>Leí el <a href="legal.html#aviso" target="_blank" rel="noopener">aviso de privacidad</a> y quiero que me escriban cuando abra.</span></label>
+        <p class="error" id="f-error" role="alert" hidden></p>
+        <button class="liquido vidrio grande" id="f-enviar" type="submit">Anotarme en la lista</button>
+        <p class="nota-forma">Solo guardamos tu correo, la fecha y que aceptaste el aviso. Lo usamos únicamente para avisarte que abrimos; no lo compartimos ni lo vendemos. Para salirte de la lista, escribe a <a href="mailto:rl7103405@gmail.com">rl7103405@gmail.com</a>.</p>
         </div>
         <div class="gracias" id="f-gracias" hidden>
-          <h3 id="f-gracias-tit" tabindex="-1">Tu mensaje está listo.</h3>
-          <p>Se abrió WhatsApp con tu mensaje: solo falta que le des enviar. Cuando me llegue, te contesto en las próximas 24 horas.</p>
-          <p>¿No se abrió? <a id="f-otra-vez" href="https://wa.me/522216675776" target="_blank" rel="noopener">Ábrelo otra vez</a> o escríbeme al 221 667 5776.</p>
-          <button class="boton-texto" type="button" id="f-volver">Cambiar mis respuestas</button>
+          <h3 id="f-gracias-tit" tabindex="-1">Ya estás en la lista.</h3>
+          <p>Cuando abramos, te escribimos a <strong id="f-gracias-correo"></strong>. El primer correo te pedirá que confirmes que quieres entrar; si no lo confirmas, te borramos de la lista.</p>
+          <button class="boton-texto" type="button" id="f-volver">Anotar otro correo</button>
         </div>
       </form>
     </div>
@@ -351,7 +314,7 @@
 <footer class="pie">
   <div class="pie-filas">
     <p class="legal">Mi Cartera no es asesoría financiera ni de inversión: calcula con los datos que tú capturas. Las tasas, rendimientos y proyecciones que muestra son estimaciones, no promesas. Las capturas de esta página son de una cartera de ejemplo.</p>
-    <div class="pie-links mono"><a href="legal.html#aviso">Aviso de privacidad</a><a href="legal.html#condiciones">Condiciones</a><a href="#top">Arriba ↑</a></div>
+    <div class="pie-links mono"><a href="legal.html#aviso">Aviso de privacidad</a><a href="#top">Arriba ↑</a></div>
   </div>
   <div class="pie-gigante" aria-hidden="true">Mi <span>Cartera</span></div>
   <div class="pie-bajo mono"><span>© 2026</span><span>Hecha en México</span></div>
@@ -379,7 +342,7 @@
 <script src="assets/js/gsap.min.js" integrity="sha384-sG0Hv1tP1lZCk9KQmrIbY/XNwi+OY84GQqhMscbnsoBFqAz8KNCil1kvfL3Hbbk2"></script>
 <script src="assets/js/ScrollTrigger.min.js" integrity="sha384-xNHNOfrykny9oFwnmpfNbkSc6isny38d1GZvTRVuFV0l9fTMIZKhULvomyQJSMRl"></script>
 <script src="assets/js/lenis.min.js" integrity="sha384-iXPt1IC/yWFkdsPrBaaN0T3m+kXhyvzwr61wVpPZoo9Tw9to4x1MydzFQNovyauL"></script>
-<script src="assets/js/confetti.browser.js" integrity="sha384-/Ko/tqVwPYurnBe+Mj8WWw+39WmyOZn/kU+neqXn4hRxGI575k07mB/hIekAT51+"></script>
+<script src="lista-espera.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
