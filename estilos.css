@@ -519,7 +519,7 @@ main{position:relative;z-index:2}
 .plan-lista li::before{content:"";position:absolute;left:2px;top:.42em;width:12px;height:7px;border-left:2px solid var(--acento);border-bottom:2px solid var(--acento);transform:rotate(-45deg)}
 .plan .liquido.grande{width:100%}
 .plan-pie{margin-top:14px;font-size:12.5px;color:var(--gris-2);text-align:center}
-@media (max-width:900px){ .precio-grid{grid-template-columns:1fr} }
+@media (max-width:900px){ .precio-grid{grid-template-columns:minmax(0,1fr)} }
 
 /* preguntas: <details> de siempre, que funciona con dedo, teclado y lector de pantalla */
 .preguntas{margin-top:clamp(40px,5vw,64px);border-top:1px solid var(--linea);max-width:860px}
