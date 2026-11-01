@@ -42,6 +42,8 @@ async function abrir(ancho, conProyecto, cortarRed, colgarRed) {
   });
   await page.goto(SITIO, { waitUntil: 'load' });
   if (conProyecto) await page.evaluate(p => { window.ListaEspera.CONFIG.projectId = p; window.ListaEspera.CONFIG.apiKey = 'llave-de-prueba'; }, P);
+  // desde que la página trae fundview-lista, "sin proyecto" se simula vaciando la configuración
+  else await page.evaluate(() => { window.ListaEspera.CONFIG.projectId = ''; window.ListaEspera.CONFIG.apiKey = ''; });
   await page.locator('#forma').scrollIntoViewIfNeeded();
   return { ctx, page };
 }
