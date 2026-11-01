@@ -294,6 +294,26 @@ main{position:relative;z-index:2}
 .boton-texto:hover{text-decoration-color:var(--acento)}
 .hero-precio{margin-top:16px;font-size:13.5px;color:var(--gris)}
 .liquido.medio{height:48px;padding:0 24px;font-size:15px;--tinte:rgba(167,216,184,.2)}
+/* Pantallas bajitas (iPhone SE y Android chicos con las barras del navegador, o el teléfono acostado):
+   el arranque queda fijo mientras se anima, así que su contenido tiene que caber entre el menú y "Siguiente".
+   La misma condición está en app.js (BAJITA) para que "Siguiente" arranque como circulito. */
+@media (max-width:500px) and (max-height:640px), (max-height:430px){
+  .hero{min-height:0;padding:68px 0 58px}
+  .hero-eyebrow{display:none}
+  .hero-titulo{font-size:clamp(32px,min(10vw,7.4vh),46px)}
+  .hero-sub{margin-top:14px;font-size:14px;line-height:1.45}
+  .hero-ctas{margin-top:16px;gap:4px 14px}
+  .hero-precio{margin-top:8px;font-size:12.5px} }
+/* lo más bajito (SE de 2016 con barras, teléfono acostado): un escalón más chico */
+@media (max-height:480px){
+  .hero{padding:60px 0 8px}
+  .hero-titulo{font-size:clamp(28px,7.4vh,34px)}
+  .hero-sub{margin-top:8px;font-size:13px;line-height:1.4}
+  .hero-ctas{margin-top:10px}
+  .liquido.medio,.boton-texto{height:44px}
+  .hero-precio{margin-top:4px} }
+/* y si además es angosto, "Cómo funciona" bajaba a otro renglón: el menú y "Siguiente" llevan al mismo lugar */
+@media (max-height:480px) and (max-width:500px){ .hero{padding-bottom:58px} .hero-ctas .boton-texto{display:none} }
 .hero-capa{position:absolute;inset:0;z-index:6;pointer-events:none}
 .vertical{position:absolute;left:var(--lado);bottom:48px;writing-mode:vertical-rl;transform:rotate(180deg)}
 .destello{position:absolute;left:50%;top:50%;width:80vmin;height:80vmin;margin:-40vmin 0 0 -40vmin;border-radius:50%;

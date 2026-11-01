@@ -217,11 +217,14 @@
   };
   bSig.addEventListener('click', () => { const y = proxima(); if (y !== undefined) irA(y); });
   let pendiente = false;
+  // en pantallas bajitas la pastilla tapaba el precio del arranque: ahí es circulito desde el principio (misma condición que estilos.css)
+  const BAJITA = matchMedia('(max-width:500px) and (max-height:640px), (max-height:430px)');
   const revisarSig = () => {
     pendiente = false;
     bSig.classList.toggle('oculto', proxima() === undefined);
-    bSig.classList.toggle('compacto', scrollY > 40);   // con palabra solo al principio
+    bSig.classList.toggle('compacto', scrollY > 40 || BAJITA.matches);   // con palabra solo al principio
   };
+  BAJITA.addEventListener('change', revisarSig);
   addEventListener('scroll', () => { if (!pendiente) { pendiente = true; requestAnimationFrame(revisarSig); } }, { passive: true });
   addEventListener('load', revisarSig);
 
