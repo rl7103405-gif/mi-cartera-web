@@ -314,7 +314,7 @@
   // Cada cuenta es una cápsula de vidrio que gira en una elipse inclinada. Al
   // bajar, el radio colapsa (y el giro se acelera, como un patinador que cierra
   // los brazos) hasta fundirse en el centro, donde nace el número.
-  const NOMBRES = ['Nu', 'Revolut', 'Cajita Turbo', 'Mercado Pago', 'Klar', 'Tu bolsa', 'Efectivo', 'BBVA'];
+  const NOMBRES = ['Tu banco', 'Otro banco', 'Cajita', 'Otra cajita', 'Tarjeta', 'Tu bolsa', 'Efectivo', 'Otra moneda'];
   const svg = $('#anillos'), capaChips = $('#chips'), gRayos = $('#rayos'), gChispas = $('#chispas');
   const anA = $('#anilloA'), anB = $('#anilloB');
   const chips = NOMBRES.map((n, i) => {
