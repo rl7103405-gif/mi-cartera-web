@@ -536,7 +536,7 @@
     .to('.destello', { scale: 1, opacity: 0.3, duration: 0.2, ease: 'power1.out' }, 0.48)
     .fromTo('.numero-wrap', { opacity: 0, scale: 0.96 },
                             { opacity: 1, scale: 1, duration: 0.16, ease: 'power2.out' }, 0.38)
-    .fromTo(cuenta, { v: 0 }, { v: 204697.58, duration: 0.28, ease: 'power3.out', onUpdate: pintarNumero }, 0.38)
+    .fromTo(cuenta, { v: 0 }, { v: 222361.27, duration: 0.28, ease: 'power3.out', onUpdate: pintarNumero }, 0.38)
     .to('#ganado', { opacity: 1, duration: 0.1 }, 0.62)
     .to({}, { duration: 0.24 });                     // el número se queda quieto para leerlo
 
