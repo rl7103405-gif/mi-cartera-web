@@ -12,9 +12,25 @@ service cloud.firestore {
       allow read, update, delete: if false;
     }
 
+    // La respuesta al primer correo (confirmar.html). Solo las crea fundview-app\mantenimiento\tanda.mjs con la cuenta del dueno, y no llevan
+    // correo. El id es un token de 256 bits que solo viaja en ese correo: sin el no se puede hacer nada, y nadie puede listarlas. Lo unico que
+    // se le puede cambiar es el estado y la hora del servidor en que se contesto.
+    match /confirmaciones/{token} {
+      allow update: if respuestaValida(request.resource.data, resource.data);
+      allow read, create, delete: if false;
+    }
+
     // Todo lo demas, cerrado.
     match /{document=**} {
       allow read, write: if false;
+    }
+
+    // Confirmar: solo antes de que venza, y se puede repetir (doble clic). Darse de baja: siempre, tambien despues de invitado. Una baja no se deshace.
+    function respuestaValida(d, a) {
+      return d.diff(a).affectedKeys().hasOnly(['estado', 'respondida'])
+        && d.respondida == request.time
+        && ((d.estado == 'confirmado' && a.estado in ['pendiente', 'confirmado'] && request.time < a.caduca)
+            || (d.estado == 'baja' && a.estado in ['pendiente', 'confirmado', 'invitado', 'baja']));
     }
 
     // El correo empieza con letra o numero: uno que empiece con + o - Excel lo lee como formula.

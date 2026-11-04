@@ -12,3 +12,4 @@
 .borrador{border:1px solid var(--linea);border-radius:16px;padding:14px 18px;margin-top:20px}
 .legal-volver{font-size:14px}
 .legal-volver a{display:inline-flex;align-items:center;min-height:44px}
+.confirmar-boton{margin-top:22px;min-height:48px}
