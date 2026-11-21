@@ -3,7 +3,7 @@
 // Correr desde la raiz del repo:
 //   firebase emulators:exec --only firestore --project demo-lista "node pruebas/e2e-lista.mjs"
 // Capturas (opcional): CAPTURAS=capturas node ... deja PNG a 1440 y 390 px.
-import { chromium } from 'file:///C:/Users/elita/AppData/Roaming/npm/node_modules/@playwright/cli/node_modules/playwright/index.mjs';
+import { chromium } from 'file:///C:/Users/rl710/AppData/Roaming/npm/node_modules/@playwright/cli/node_modules/playwright/index.mjs';
 import http from 'node:http';
 import { readFile, mkdir } from 'node:fs/promises';
 import { extname, join, resolve } from 'node:path';
