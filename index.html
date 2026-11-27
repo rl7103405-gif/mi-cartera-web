@@ -82,7 +82,7 @@
         <a class="liquido vidrio medio" href="#lugar">Anotarme en la lista</a>
         <a class="boton-texto" href="#como">Cómo funciona ↓</a>
       </div>
-      <p class="hero-precio">Abrimos por invitación · Precio previsto: $139 al mes</p>
+      <p class="hero-precio">Te anotas y te llega tu invitación al correo · Precio previsto: $139 al mes</p>
     </div>
 
     <div class="numero-wrap">
@@ -272,7 +272,7 @@
       <details><summary>¿Cuánto tiempo me va a tomar?</summary>
         <p>Unos minutos al principio, con el asistente. Después, registrar un gasto toma unos segundos.</p></details>
       <details><summary>¿Cuándo abre?</summary>
-        <p>Estamos terminando la versión para que la use cualquiera. Abrimos por invitación, en el orden de la lista, y te escribimos al correo que dejes. No te vamos a mandar nada más.</p></details>
+        <p>Ya puede entrar cualquier persona de 18 años o más. Al anotarte te llega tu invitación al correo que dejes, en unos minutos. No te vamos a mandar nada más.</p></details>
       <details><summary>¿Anotarme me compromete a algo?</summary>
         <p>No. Anotarte no cuesta nada y no te obliga a pagar. Cuando te toque decides si entras. Si ya no quieres estar en la lista, escríbenos y te borramos.</p></details>
       <details><summary>¿Alguien de Fundview puede ver mis saldos?</summary>
@@ -285,8 +285,8 @@
     <div class="cta-grid">
       <div class="cta-txt">
         <span class="kicker mono" data-rev>Lista de espera</span>
-        <h2 class="titulo-grande" data-rev>Te avisamos cuando <em>abra</em>.</h2>
-        <p data-rev>Estamos terminando la versión para que la use cualquiera. Déjanos tu correo y te escribimos cuando sea tu turno. Anotarte no cuesta nada ni te compromete a pagar.</p>
+        <h2 class="titulo-grande" data-rev>Tu invitación, <em>en minutos</em>.</h2>
+        <p data-rev>Déjanos tu correo y en unos minutos te llega tu invitación para crear tu cuenta. Anotarte no cuesta nada ni te compromete a pagar.</p>
       </div>
       <form class="forma vidrio" id="forma" data-rev novalidate>
         <div class="forma-campos" id="f-campos">
@@ -294,14 +294,14 @@
           <input type="email" id="f-correo" name="correo" autocomplete="email" inputmode="email" maxlength="254" placeholder="tu@correo.com" required aria-describedby="f-error"></label>
         <!-- trampa para robots: una persona no la ve ni la llena -->
         <div class="trampa" aria-hidden="true"><label for="f-ref">Déjalo vacío</label><input type="text" id="f-ref" name="ref_x7" tabindex="-1" autocomplete="off"></div>
-        <label class="acepto" for="f-acepto"><input type="checkbox" id="f-acepto" aria-describedby="f-error"><span>Leí el <a href="legal.html#aviso" target="_blank" rel="noopener">aviso de privacidad</a> y quiero que me escriban cuando abra.</span></label>
+        <label class="acepto" for="f-acepto"><input type="checkbox" id="f-acepto" aria-describedby="f-error"><span>Leí el <a href="legal.html#aviso" target="_blank" rel="noopener">aviso de privacidad</a> y quiero que me manden mi invitación.</span></label>
         <p class="error" id="f-error" role="alert" hidden></p>
         <button class="liquido vidrio grande" id="f-enviar" type="submit">Anotarme en la lista</button>
-        <p class="nota-forma">Solo guardamos tu correo, la fecha y que aceptaste el aviso. Lo usamos únicamente para avisarte que abrimos; no lo compartimos ni lo vendemos. Para salirte de la lista, escribe a <a href="mailto:fundviewapp@gmail.com">fundviewapp@gmail.com</a>.</p>
+        <p class="nota-forma">Solo guardamos tu correo, la fecha y que aceptaste el aviso. Lo usamos únicamente para mandarte tu invitación; no lo compartimos ni lo vendemos. Para salirte de la lista, escribe a <a href="mailto:fundviewapp@gmail.com">fundviewapp@gmail.com</a>.</p>
         </div>
         <div class="gracias" id="f-gracias" hidden>
           <h3 id="f-gracias-tit" tabindex="-1">Ya estás en la lista.</h3>
-          <p>Cuando abramos, te escribimos a <strong id="f-gracias-correo"></strong>. El primer correo te pedirá que confirmes que quieres entrar; si no lo confirmas, te borramos de la lista.</p>
+          <p>En unos minutos te llega tu invitación a <strong id="f-gracias-correo"></strong>, con tu código para crear tu cuenta. Si no la ves, revisa tu carpeta de spam. El código vence en 48 horas.</p>
           <button class="boton-texto" type="button" id="f-volver">Anotar otro correo</button>
         </div>
       </form>
