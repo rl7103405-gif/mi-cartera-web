@@ -26,6 +26,7 @@ let ok = 0, mal = 0;
 const caso = (n, c, x) => { if (c) { ok++; console.log('  OK  ' + n); } else { mal++; console.log('  MAL ' + n + (x !== undefined ? '  -> ' + x : '')); } };
 const contar = async () => ((await (await fetch(`${EMU}/v1/${DOCS}/lista_espera`, { headers: { Authorization: 'Bearer owner' } })).json()).documents || []);
 
+const acVistos = [];
 const nav = await chromium.launch({ channel: 'chrome' });   // el Chrome instalado (como las demas pruebas)
 const errores = [];
 async function abrir(ancho, conProyecto, cortarRed, colgarRed) {
@@ -33,7 +34,13 @@ async function abrir(ancho, conProyecto, cortarRed, colgarRed) {
   const page = await ctx.newPage();
   page.on('console', m => { if (m.type() === 'error') errores.push(m.text()); });
   page.on('pageerror', e => errores.push(String(e)));
+  // (27-nov-2026) reCAPTCHA y el intercambio de App Check, simulados: la prueba no sale a Google. SIN_RC=1 simula que reCAPTCHA no carga.
+  await page.route('https://www.google.com/recaptcha/**', route => process.env.SIN_RC === '1' ? route.abort('blockedbyclient') : route.fulfill({ status: 200, headers: { 'Content-Type': 'text/javascript' },
+    body: 'window.grecaptcha={enterprise:{ready:function(f){f()},execute:function(){return Promise.resolve("rc-falso")}}};' }));
+  await page.route('https://content-firebaseappcheck.googleapis.com/**', route => { const b = JSON.parse(route.request().postData() || '{}');
+    route.fulfill({ status: b.recaptchaEnterpriseToken === 'rc-falso' ? 200 : 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ token: 'ac-falso', ttl: '3600s' }) }); });
   await page.route('https://firestore.googleapis.com/**', async route => {
+    acVistos.push(route.request().headers()['x-firebase-appcheck'] || '');
     if (cortarRed) return route.abort('internetdisconnected');
     if (colgarRed) return;   // la ruta nunca responde
     const u = new URL(route.request().url());
@@ -121,6 +128,7 @@ console.log('Telefono (390 px):');
   caso('se anota desde el telefono', !(await page.isHidden('#f-gracias')) && (await contar()).length === 2);
   await ctx.close(); }
 
+caso(process.env.SIN_RC === '1' ? 'sin reCAPTCHA las escrituras salen igual, sin encabezado' : 'cada escritura lleva el token de App Check', acVistos.length > 0 && acVistos.every(h => h === (process.env.SIN_RC === '1' ? '' : 'ac-falso')), JSON.stringify(acVistos));
 const csp = errores.filter(e => /Content Security Policy|Refused to/.test(e));
 caso('ninguna violacion de la CSP', csp.length === 0, csp.join(' | '));
 const otros = errores.filter(e => !/Content Security Policy|Refused to|ERR_INTERNET_DISCONNECTED|Failed to load resource/.test(e));

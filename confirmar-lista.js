@@ -34,6 +34,8 @@
           currentDocument: { exists: true }
         }]
       };
+      var ac = raiz.ListaEspera && raiz.ListaEspera.encabezadoAppCheck ? raiz.ListaEspera.encabezadoAppCheck(Object.assign({ accion: 'responder' }, o)) : Promise.resolve({});
+      return ac.then(function (ac) {
       var pedir = o.fetch || raiz.fetch;
       var ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
       var timer = null;
@@ -42,7 +44,7 @@
       });
       var envio = pedir(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: Object.assign({ 'Content-Type': 'application/json' }, ac),
         body: JSON.stringify(cuerpo),
         signal: ctl ? ctl.signal : undefined
       }).then(function (r) {
@@ -53,6 +55,7 @@
         function (res) { clearTimeout(timer); return res; },
         function (e) { clearTimeout(timer); throw e; }
       );
+      });
     }).catch(function () { return 'error'; });
   }
 

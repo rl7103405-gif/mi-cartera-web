@@ -632,3 +632,6 @@ main{position:relative;z-index:2}
 .forma-campos{display:flex;flex-direction:column;gap:26px}
 .forma-campos[hidden],.gracias[hidden]{display:none}
 .gracias .boton-texto{background:none;border:0;padding:0;font:inherit;font-size:15px;color:var(--hueso);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+/* (27-nov-2026) reCAPTCHA invisible: su insignia flotante tapa la pagina; la leyenda de la forma la sustituye, como pide Google */
+.grecaptcha-badge{visibility:hidden!important}
+.nota-recaptcha{margin-top:-4px}

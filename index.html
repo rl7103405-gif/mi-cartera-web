@@ -7,7 +7,7 @@
 <meta name="description" content="Tus cuentas, cajitas e inversiones en una sola pantalla, con tu patrimonio total y lo que has ganado. Sin pedirte la contraseña de tu banco.">
 <meta name="theme-color" content="#0c100d">
 <!-- seguridad: solo archivos de este sitio; sin scripts ni estilos en línea -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src https://firestore.googleapis.com; worker-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/; frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com/recaptcha/; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src https://firestore.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.google.com/recaptcha/; worker-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="canonical" href="https://fundview.mx/">
 <!-- la tarjeta que sale al mandar la liga por WhatsApp -->
@@ -298,6 +298,7 @@
         <p class="error" id="f-error" role="alert" hidden></p>
         <button class="liquido vidrio grande" id="f-enviar" type="submit">Anotarme en la lista</button>
         <p class="nota-forma">Solo guardamos tu correo, la fecha y que aceptaste el aviso. Lo usamos únicamente para mandarte tu invitación; no lo compartimos ni lo vendemos. Para salirte de la lista, escribe a <a href="mailto:fundviewapp@gmail.com">fundviewapp@gmail.com</a>.</p>
+        <p class="nota-forma nota-recaptcha">Protegido por reCAPTCHA de Google: aplican su <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">política de privacidad</a> y sus <a href="https://policies.google.com/terms" target="_blank" rel="noopener">términos</a>.</p>
         </div>
         <div class="gracias" id="f-gracias" hidden>
           <h3 id="f-gracias-tit" tabindex="-1">Ya estás en la lista.</h3>

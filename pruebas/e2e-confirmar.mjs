@@ -28,16 +28,23 @@ const sembrar = (token, estado = 'pendiente', dias = 30) => fetch(`${EMU}/v1/${D
   lista: { stringValue: 'x'.repeat(64) }, estado: { stringValue: estado }, caduca: { timestampValue: new Date(Date.now() + dias * 86400000).toISOString() } } }) });
 const leer = async token => { const j = await (await fetch(`${EMU}/v1/${DOCS}/confirmaciones/${token}`, { headers: OWN })).json(); return j.fields || {}; };
 
+const acVistos = [];
 const nav = await chromium.launch({ channel: 'chrome' });
 const errores = [], aFuera = [];
 async function abrir(fragmento, { ancho = 390, cortarRed } = {}) {
   const ctx = await nav.newContext({ viewport: { width: ancho, height: ancho > 800 ? 900 : 844 }, reducedMotion: 'reduce' });
   const page = await ctx.newPage();
   const estado = { cortar: cortarRed, cuerpos: [] };
-  page.on('console', m => { if (m.type() === 'error' && !/ERR_INTERNET_DISCONNECTED|status of 40[34]/.test(m.text())) errores.push(m.text()); });
+  page.on('console', m => { if (m.type() === 'error' && !/ERR_INTERNET_DISCONNECTED|ERR_BLOCKED_BY_CLIENT|status of 40[34]/.test(m.text())) errores.push(m.text()); });
   page.on('pageerror', e => errores.push(String(e)));
   page.on('request', r => { const u = new URL(r.url()); if (u.hostname !== '127.0.0.1') aFuera.push(u.hostname); });
+  // (27-nov-2026) reCAPTCHA y el intercambio de App Check, simulados: la prueba no sale a Google. SIN_RC=1 simula que reCAPTCHA no carga.
+  await page.route('https://www.google.com/recaptcha/**', route => process.env.SIN_RC === '1' ? route.abort('blockedbyclient') : route.fulfill({ status: 200, headers: { 'Content-Type': 'text/javascript' },
+    body: 'window.grecaptcha={enterprise:{ready:function(f){f()},execute:function(){return Promise.resolve("rc-falso")}}};' }));
+  await page.route('https://content-firebaseappcheck.googleapis.com/**', route => { const b = JSON.parse(route.request().postData() || '{}');
+    route.fulfill({ status: b.recaptchaEnterpriseToken === 'rc-falso' ? 200 : 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ token: 'ac-falso', ttl: '3600s' }) }); });
   await page.route('https://firestore.googleapis.com/**', async route => {
+    acVistos.push(route.request().headers()['x-firebase-appcheck'] || '');
     if (estado.cortar) return route.abort('internetdisconnected');
     estado.cuerpos.push(route.request().postData());
     const u = new URL(route.request().url());
@@ -121,7 +128,8 @@ if (process.env.CAPTURAS) {
   }
 }
 caso('sin errores de consola ni de CSP', !errores.length, errores.join(' | '));
-caso('no sale a ningún otro sitio', aFuera.every(h => h === 'firestore.googleapis.com'), aFuera.join());
+caso(process.env.SIN_RC === '1' ? 'sin reCAPTCHA las escrituras salen igual, sin encabezado' : 'cada escritura lleva el token de App Check', acVistos.length > 0 && acVistos.every(h => h === (process.env.SIN_RC === '1' ? '' : 'ac-falso')), JSON.stringify(acVistos));
+caso('no sale a ningún otro sitio', aFuera.every(h => ['firestore.googleapis.com', 'www.google.com', 'content-firebaseappcheck.googleapis.com'].includes(h)), aFuera.join());
 await nav.close();
 srv.close();
 console.log(`\n${mal ? mal + ' MAL de ' + (ok + mal) : 'TODO BIEN ' + ok + '/' + ok}`);
