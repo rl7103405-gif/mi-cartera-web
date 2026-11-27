@@ -34,7 +34,7 @@
           currentDocument: { exists: true }
         }]
       };
-      var ac = raiz.ListaEspera && raiz.ListaEspera.encabezadoAppCheck ? raiz.ListaEspera.encabezadoAppCheck(Object.assign({ accion: 'responder' }, o)) : Promise.resolve({});
+      var ac = raiz.ListaEspera && raiz.ListaEspera.encabezadoAppCheck ? raiz.ListaEspera.encabezadoAppCheck(Object.assign({}, o, { accion: 'responder' })) : Promise.resolve({});
       return ac.then(function (ac) {
       var pedir = o.fetch || raiz.fetch;
       var ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;

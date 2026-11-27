@@ -36,7 +36,8 @@ async function abrir(ancho, conProyecto, cortarRed, colgarRed) {
   page.on('pageerror', e => errores.push(String(e)));
   // (27-nov-2026) reCAPTCHA y el intercambio de App Check, simulados: la prueba no sale a Google. SIN_RC=1 simula que reCAPTCHA no carga.
   await page.route('https://www.google.com/recaptcha/**', route => process.env.SIN_RC === '1' ? route.abort('blockedbyclient') : route.fulfill({ status: 200, headers: { 'Content-Type': 'text/javascript' },
-    body: 'window.grecaptcha={enterprise:{ready:function(f){f()},execute:function(){return Promise.resolve("rc-falso")}}};' }));
+    // RC_ROTO=1: el script carga pero NO define grecaptcha.enterprise
+    body: process.env.RC_ROTO === '1' ? 'window.grecaptcha={};' : 'window.grecaptcha={enterprise:{ready:function(f){f()},execute:function(){return Promise.resolve("rc-falso")}}};' }));
   await page.route('https://content-firebaseappcheck.googleapis.com/**', route => { const b = JSON.parse(route.request().postData() || '{}');
     route.fulfill({ status: b.recaptchaEnterpriseToken === 'rc-falso' ? 200 : 400, headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }, body: JSON.stringify({ token: 'ac-falso', ttl: '3600s' }) }); });
   await page.route('https://firestore.googleapis.com/**', async route => {
@@ -128,7 +129,22 @@ console.log('Telefono (390 px):');
   caso('se anota desde el telefono', !(await page.isHidden('#f-gracias')) && (await contar()).length === 2);
   await ctx.close(); }
 
-caso(process.env.SIN_RC === '1' ? 'sin reCAPTCHA las escrituras salen igual, sin encabezado' : 'cada escritura lleva el token de App Check', acVistos.length > 0 && acVistos.every(h => h === (process.env.SIN_RC === '1' ? '' : 'ac-falso')), JSON.stringify(acVistos));
+const sinToken = process.env.SIN_RC === '1' || process.env.RC_ROTO === '1';
+if (process.env.RC_ROTO === '1') {
+  console.log('reCAPTCHA carga pero sin grecaptcha.enterprise:');
+  const { ctx, page } = await abrir(1440, true);
+  const antes = (await contar()).length;
+  await enviar(page, 'roto1@ejemplo.com', true);
+  caso('anota igual, sin encabezado', !(await page.isHidden('#f-gracias')) && (await contar()).length === antes + 1);
+  await page.click('#f-volver');
+  const t0 = Date.now();
+  await enviar(page, 'roto2@ejemplo.com', true);
+  const dt = Date.now() - t0;
+  caso('el segundo envio anota y no tarda mas del limite (4 s)', !(await page.isHidden('#f-gracias')) && (await contar()).length === antes + 2 && dt < 4000, dt + ' ms');
+  caso('no se duplico la etiqueta del script de reCAPTCHA', (await page.$$eval('script[src*="recaptcha/enterprise.js"]', e => e.length)) <= 1);
+  await ctx.close();
+}
+caso(sinToken ? 'sin reCAPTCHA las escrituras salen igual, sin encabezado' : 'cada escritura lleva el token de App Check', acVistos.length > 0 && acVistos.every(h => h === (sinToken ? '' : 'ac-falso')), JSON.stringify(acVistos));
 const csp = errores.filter(e => /Content Security Policy|Refused to/.test(e));
 caso('ninguna violacion de la CSP', csp.length === 0, csp.join(' | '));
 const otros = errores.filter(e => !/Content Security Policy|Refused to|ERR_INTERNET_DISCONNECTED|Failed to load resource/.test(e));

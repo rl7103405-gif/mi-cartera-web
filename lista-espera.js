@@ -13,20 +13,32 @@
     // invita sin confirmar. La clave del sitio es publica por diseño. Firestore de fundview-lista lo exige solo cuando las metricas lo digan.
     appId: '1:449849119848:web:fa0fe697d1a5fcc63197dd', siteKey: '6LdC-DUuAAAAABWm5o8SPPqgq5-un5eDiia7rxnF' };
 
-  // Token de App Check: reCAPTCHA (cargado solo al anotarse, no al abrir la pagina) -> intercambio -> se guarda en memoria hasta 5 min antes
+  // Token de App Check: reCAPTCHA (cargado al enfocar el correo o al apretar un boton, no al abrir la pagina) -> intercambio -> se guarda en memoria hasta 5 min antes
   // de vencer. Nunca lanza: si algo falla devuelve {} y la escritura sale sin encabezado (mientras no se exija, sigue funcionando; ya exigido,
-  // Firestore la rechaza y la forma dice el error de siempre). Tope propio de 8 s para no dejar la forma colgada.
-  var cacheAC = null, scriptAC = null;
+  // Firestore la rechaza y la forma dice el error de siempre). Tope propio de 4 s para no dejar la forma colgada.
+  // Una sola peticion en vuelo (vueloAC): doble clic o precalentado + envio comparten la misma promesa.
+  var cacheAC = null, scriptAC = null, vueloAC = null;
   function cargarRecaptcha(doc, key) {
     if (scriptAC) return scriptAC;
     scriptAC = new Promise(function (ok, mal) {
+      var listo = function () {
+        try { raiz.grecaptcha.enterprise.ready(function () { ok(raiz.grecaptcha.enterprise); }); }
+        catch (e) { scriptAC = null; mal(e); }
+      };
       var g = raiz.grecaptcha;
-      if (g && g.enterprise) return g.enterprise.ready(function () { ok(raiz.grecaptcha.enterprise); });
-      var s = doc.createElement('script');
-      s.src = 'https://www.google.com/recaptcha/enterprise.js?render=' + encodeURIComponent(key);
+      if (g && g.enterprise) return listo();
+      var src = 'https://www.google.com/recaptcha/enterprise.js?render=' + encodeURIComponent(key);
+      var s = null, etiquetas = doc.getElementsByTagName('script');
+      for (var i = 0; i < etiquetas.length; i++) if (etiquetas[i].src === src) { s = etiquetas[i]; break; }
+      if (s && s.getAttribute('data-cargado') === '1') return listo();   // ya cargo y aun no hay grecaptcha.enterprise: falla de inmediato
+      var alCargar = function () { s.setAttribute('data-cargado', '1'); listo(); };
+      var alFallar = function () { scriptAC = null; if (s.parentNode) s.parentNode.removeChild(s); mal(new Error('sin-recaptcha')); };
+      if (s) { s.addEventListener('load', alCargar); s.addEventListener('error', alFallar); return; }
+      s = doc.createElement('script');
+      s.src = src;
       s.async = true;
-      s.onload = function () { raiz.grecaptcha.enterprise.ready(function () { ok(raiz.grecaptcha.enterprise); }); };
-      s.onerror = function () { scriptAC = null; mal(new Error('sin-recaptcha')); };
+      s.onload = alCargar;
+      s.onerror = alFallar;
       doc.head.appendChild(s);
     });
     return scriptAC;
@@ -37,6 +49,7 @@
     var ahora = Date.now();
     if (o.appCheck === false || !cfg.appId || !cfg.siteKey) return Promise.resolve({});
     if (cacheAC && cacheAC.vence > ahora) return Promise.resolve({ 'X-Firebase-AppCheck': cacheAC.token });
+    if (vueloAC) return vueloAC;
     var trabajo = Promise.resolve().then(function () {
       if (typeof o.appCheck === 'function') return o.appCheck();       // las pruebas inyectan el token
       var doc = raiz.document;
@@ -55,9 +68,17 @@
         return j.token;
       });
     });
-    var limite = new Promise(function (ok) { setTimeout(function () { ok(null); }, o.esperaAC || 8000); });
-    return Promise.race([trabajo, limite]).then(function (t) { return t ? { 'X-Firebase-AppCheck': t } : {}; }, function () { return {}; });
+    var timerAC = null;
+    var limite = new Promise(function (ok) { timerAC = setTimeout(function () { ok('limite'); }, o.esperaAC || 4000); });
+    vueloAC = Promise.race([trabajo, limite]).then(function (t) {
+      clearTimeout(timerAC); vueloAC = null;
+      if (t === 'limite') { scriptAC = null; return {}; }   // gano el tope: el siguiente intento vuelve a cargar reCAPTCHA
+      return t ? { 'X-Firebase-AppCheck': t } : {};
+    }, function () { clearTimeout(timerAC); vueloAC = null; return {}; });
+    return vueloAC;
   }
+  // Pide el token por adelantado (sin esperarlo): la pagina lo llama al enfocar el correo, para que al enviar ya este en memoria.
+  function precalentarAppCheck(opciones) { encabezadoAppCheck(opciones); }
 
   var FORMATO = /^[a-z0-9][a-z0-9._%+-]*@[a-z0-9-]+([.][a-z0-9-]+)*[.][a-z]{2,24}$/;
 
@@ -124,7 +145,7 @@
     }).catch(function () { return 'error'; });
   }
 
-  var api = { anotar: anotar, encabezadoAppCheck: encabezadoAppCheck, normalizar: normalizar, esValido: esValido, idAlAzar: idAlAzar, CONFIG: CONFIG };
+  var api = { anotar: anotar, encabezadoAppCheck: encabezadoAppCheck, precalentarAppCheck: precalentarAppCheck, normalizar: normalizar, esValido: esValido, idAlAzar: idAlAzar, CONFIG: CONFIG };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else raiz.ListaEspera = api;
 })(typeof window !== 'undefined' ? window : globalThis);

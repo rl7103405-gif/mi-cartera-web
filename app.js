@@ -55,6 +55,8 @@
     else if (r === 'invalido') mostrarError('Escribe un correo completo, por ejemplo ana@gmail.com.', fCorreo);
     else { mostrarError(MENSAJES[r] || MENSAJES.error, null); fEnviar.focus(); }
   });
+  // reCAPTCHA se pide por adelantado al enfocar el correo por primera vez (no al abrir la pagina); al enviar, el token ya suele estar listo
+  fCorreo.addEventListener('focus', () => { LE && LE.precalentarAppCheck && LE.precalentarAppCheck(); }, { once: true });
   $('#f-volver').addEventListener('click', () => { fCorreo.value = ''; fAcepto.checked = false; fTrampa.value = ''; fGracias.hidden = true; fCampos.hidden = false; fCorreo.focus(); });
 
   // ── precio previsto: mensual o anual ───────────────────────────────────
